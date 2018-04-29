@@ -69,7 +69,7 @@ class HelpFormatter:
 class Help:
     def __init__(self, bot):
         self.bot = bot
-
+        self.suggestionch = self.bugreportch = None
 
     @commands.command()
     async def help(self, ctx, cmd=None):
@@ -159,10 +159,34 @@ class Help:
             return await ctx.send(f'Could not find command `{cmd}`')
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(aliases=['support'])
     async def invite(self, ctx):
+        """
+        Sends a support server invite and a bot invite
+        """
         embed = discord.Embed(title='Invites:', description='[Bot invite](https://discordapp.com/api/oauth2/authorize?client_id=440113872523755520&permissions=0&scope=bot)\n[Support server invite](https://discord.gg/gZESRN5)', color=discord.Color.dark_teal())
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def suggest(self, ctx, *, suggestion):
+        """
+        Sends a suggestion to the support server
+        """
+        await ctx.send('\U00002705')
+        if self.suggestionch is None:
+            self.suggestionch = self.bot.get_channel(440221696184549377)
+        await self.suggestionch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
+
+    @commands.command()
+    async def bugreport(self, ctx, *, suggestion):
+        """
+        Sends a bugreport to the support server
+        """
+        await ctx.send('\U00002705')
+        if self.bugreportch is None:
+            self.bugreportch = self.bot.get_channel(440221712056057856)
+        await self.bugreportch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
+
 
 def setup(bot):
     bot.remove_command('help')
