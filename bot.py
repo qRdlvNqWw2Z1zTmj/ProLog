@@ -37,6 +37,8 @@ if __name__ == '__main__':
     bot = ProLog(command_prefix=['?', "!"])
     bot.remove_command("help")
 
+
+
     # Load cogs
     cogs = ""
     for extension in ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp"]:

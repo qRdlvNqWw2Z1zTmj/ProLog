@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from .utils import HelpFormatter
 
 
 class General:
@@ -14,5 +15,4 @@ class General:
 
 
 def setup(bot):
-    bot.remove_command('help')
     bot.add_cog(General(bot))
