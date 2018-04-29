@@ -1,5 +1,6 @@
 import asyncio
 from operator import attrgetter
+import utils
 
 import discord
 from discord.ext import commands
@@ -172,7 +173,7 @@ class Help:
         """
         Sends a suggestion to the support server
         """
-        await ctx.send('\U00002705')
+        await utils.completed(ctx.message)
         if self.suggestionch is None:
             self.suggestionch = self.bot.get_channel(440221696184549377)
         await self.suggestionch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
@@ -182,7 +183,7 @@ class Help:
         """
         Sends a bugreport to the support server
         """
-        await ctx.send('\U00002705')
+        await utils.completed(ctx.message)
         if self.bugreportch is None:
             self.bugreportch = self.bot.get_channel(440221712056057856)
         await self.bugreportch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')

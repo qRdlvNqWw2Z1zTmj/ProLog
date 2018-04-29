@@ -2,6 +2,7 @@ import io
 import textwrap
 import traceback
 from contextlib import redirect_stdout
+import utils
 
 from discord.ext import commands
 
@@ -55,7 +56,7 @@ class Eval:
         else:
             value = stdout.getvalue()
             try:
-                await ctx.message.add_reaction('\u2705')
+                await utils.completed(ctx.message)
             except:
                 pass
 
