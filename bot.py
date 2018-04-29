@@ -1,9 +1,10 @@
 import discord
-import config
+from config import token
 from discord.ext import commands
-import aiohttp
 
-class Boat(commands.Bot):
+bot = commands.Bot()
+
+class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
