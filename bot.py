@@ -1,4 +1,5 @@
 import discord
+import config
 from discord.ext import commands
 import aiohttp
 
@@ -19,4 +20,7 @@ class Boat(commands.Bot):
             return
         
         await self.process_commands(message)
+
+
+bot.run(token)
 
