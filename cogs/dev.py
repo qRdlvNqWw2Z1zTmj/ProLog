@@ -12,11 +12,8 @@ class Dev:
     @commands.command()
     async def logout(self, ctx):
         """Logs the bot out."""
-        await ctx.send('Logging out bai')
         self.bot.update = False
         await asyncio.sleep(60)
-        self.bot.living_file.close()
-        self.bot.pref_file.close()
         await ctx.send('Logged out')
         self.bot.logout()
 

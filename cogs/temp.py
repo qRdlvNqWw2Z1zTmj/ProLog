@@ -12,3 +12,7 @@ class Temp:
         await ctx.channel.purge(limit=limit)
         await functions.complete(ctx.message)
 
+
+
+def setup(bot):
+    bot.add_cog(Temp(bot))
