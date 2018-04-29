@@ -1,6 +1,7 @@
-import discord
 import sys
 import traceback
+
+import discord
 from discord.ext import commands
 
 import config
