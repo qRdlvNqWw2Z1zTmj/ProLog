@@ -31,7 +31,7 @@ if __name__ == '__main__':
     bot = ProLog(command_prefix=['?', "!"])
 
     # Load cogs
-    for extension in ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp"]:
+    for extension in ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp", "cogs.errorhandler"]:
         try:
             bot.load_extension(extension)
         except Exception as e:
