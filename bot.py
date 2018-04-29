@@ -1,10 +1,10 @@
 import discord
-import config
+from config import token
 from discord.ext import commands
 import aiohttp
 import config
 
-class Boat(commands.Bot):
+class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
     
@@ -23,5 +23,5 @@ class Boat(commands.Bot):
         await self.process_commands(message)
 
 if __name__ == '__main__':
-    bot = Boat(command_prefix='?')
+    bot = Bot(command_prefix='?')
     bot.run(config.token)
