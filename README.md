@@ -1,0 +1,2 @@
+# ProLog
+Discord logging bot
