@@ -46,7 +46,7 @@ class ErrorHandler:
             return
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f'Required argument {str(error.param).split(":")[0]} is missing. See {bot.command_prefix[0]}help {ctx.command.name} for usage')
+            await ctx.send(f'Required argument {str(error.param).split(":")[0]} is missing. See {self.bot.command_prefix[0]}help {ctx.command.name} for usage')
 
 
         else:
