@@ -159,7 +159,9 @@ class Help:
             return await ctx.send(f'Could not find command `{cmd}`')
         await ctx.send(embed=embed)
 
-
+    @commands.command()
+    async def invite(self, ctx):
+        embed = discord.Embed(description='[Bot invite](https://discordapp.com/api/oauth2/authorize?client_id=440113872523755520&permissions=0&scope=bot)\n[Support server invite](https://discord.gg/gZESRN5)')
 
 def setup(bot):
     bot.remove_command('help')
