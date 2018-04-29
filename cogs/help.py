@@ -1,7 +1,7 @@
 import asyncio
 from operator import attrgetter
-import utils
-
+from .utils import functions
+#pylint: disable=E402
 import discord
 from discord.ext import commands
 
@@ -173,7 +173,7 @@ class Help:
         """
         Sends a suggestion to the support server
         """
-        await utils.completed(ctx.message)
+        await functions.completed(ctx.message)
         if self.suggestionch is None:
             self.suggestionch = self.bot.get_channel(440221696184549377)
         await self.suggestionch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
@@ -183,7 +183,7 @@ class Help:
         """
         Sends a bugreport to the support server
         """
-        await utils.completed(ctx.message)
+        await functions.completed(ctx.message)
         if self.bugreportch is None:
             self.bugreportch = self.bot.get_channel(440221712056057856)
         await self.bugreportch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
