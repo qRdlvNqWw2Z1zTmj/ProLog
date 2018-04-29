@@ -9,7 +9,7 @@ class General:
     @commands.command()
     async def say(self, ctx, *, arg):
         await ctx.send(arg)
-
+        await ctx.message.delete()
 
 
 def setup(bot):

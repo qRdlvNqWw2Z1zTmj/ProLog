@@ -25,12 +25,6 @@ class ProLog(commands.Bot):
             return
         await self.process_commands(message)
 
-    async def on_command_error(self, ctx, error):
-        if isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f"Required argument `{error.param.name}` is missing. See {bot.command_prefix[0]}help {ctx.command.name}")
-
-
-
 
 if __name__ == '__main__':
     # Def bot
