@@ -9,7 +9,7 @@ class Dev:
         self.bot = bot
 
 
-    @commands.command(help='Logs the bot out.', usage='')
+    @commands.command()
     async def logout(self, ctx):
         """Logs the bot out."""
         await ctx.send('Logging out bai')
@@ -21,7 +21,7 @@ class Dev:
         self.bot.logout()
 
 
-    @commands.command(help='Loads an module.', usage='<module>')
+    @commands.command()
     async def load(self, ctx, *, module):
         """Loads a module."""
         try:
@@ -32,7 +32,7 @@ class Dev:
             await ctx.send('\N{OK HAND SIGN}')
 
 
-    @commands.command(help='Unloads an module.', usage='<module>')
+    @commands.command()
     async def unload(self, ctx, *, module):
         """Unloads a module."""
         try:
@@ -43,8 +43,8 @@ class Dev:
             await ctx.send('\N{OK HAND SIGN}')
 
 
-    @commands.command(help='Reloads a module', usage='<module>')
-    async def reload(self, ctx, module: str):
+    @commands.command()
+    async def reload(self, ctx, module):
         """Reloads a module."""
         try:
             self.bot.unload_extension(module)
