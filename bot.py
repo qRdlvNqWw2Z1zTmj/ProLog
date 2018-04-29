@@ -14,7 +14,7 @@ class ProLog(commands.Bot):
     async def on_ready(self):
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
-        print(f"Loaded cogs {', '.join([c for c in self.cogs])}") #seth this is the proper way
+        print(f"Loaded cogs {', '.join([c for c in self.cogs])}") #Seth, this is the proper way
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
 
