@@ -11,7 +11,7 @@ class Eval:
         self.bot = bot
         self._last_result = None
 
-    def cleanup_code(self, content):
+    async def cleanup_code(self, content, ctx):
         """Automatically removes code blocks from the code."""
         # Remove ```py\n```
         if content.startswith('```') and content.endswith('```'):
@@ -35,7 +35,7 @@ class Eval:
 
         env.update(globals())
 
-        body = self.cleanup_code(body)
+        body = await self.cleanup_code(body, ctx)
         stdout = io.StringIO()
 
         to_compile = f'async def func():\n{textwrap.indent(body, "  ")}'
