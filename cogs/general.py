@@ -7,6 +7,11 @@ class General:
         self.bot = bot
 
 
+    @commands.command()
+    async def say(self, ctx, *, arg):
+        await ctx.send(arg)
+
+
 
 def setup(bot):
     bot.remove_command('help')
