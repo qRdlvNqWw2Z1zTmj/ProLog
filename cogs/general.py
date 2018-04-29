@@ -1,12 +1,13 @@
+import asyncio
 import discord
 from discord.ext import commands
-import asyncio
-from operator import attrgetter
-from .utils import HelpFormatter
+from .utils.help import HelpFormatter
+
 
 class General:
     def __init__(self, bot):
         self.bot = bot
+
     
     @commands.command(help="Shows help and usage for commands, or a command list.\nUsage help:\n/: Argument must be one of the choices mentioned.\n*: Argument is optional\n< >: Argument must be a single item\n[ ]: Argument can be more than one item. Use \"double qoutes\" to include spaces in argument.\n( ): Same as < >, but spaces are automatically included.", usage="*<command>")
     async def help(self, ctx, cmd=None):
@@ -81,6 +82,9 @@ class General:
         if embed is None:
             return await ctx.send(f'Could not find command `{cmd}`')
         await ctx.send(embed=embed)
+
+
+
 
 def setup(bot):
     bot.remove_command('help')
