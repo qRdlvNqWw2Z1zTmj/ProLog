@@ -16,7 +16,8 @@ class Eval:
         # Remove ```py\n```
         if content.startswith('```') and content.endswith('```'):
             return '\n'.join(content.split('\n')[1:-1])
-
+        else:
+                return await ctx.send("Use codeblocks you smelly. You're still fit though")
         return content.strip('` \n')
 
 
