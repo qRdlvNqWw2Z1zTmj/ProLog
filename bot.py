@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import aiohttp
+import config
 
 class Boat(commands.Bot):
     def __init__(self, *args, **kwargs):
@@ -20,3 +21,6 @@ class Boat(commands.Bot):
         
         await self.process_commands(message)
 
+if __name__ == '__main__':
+    bot = Boat(command_prefix='?')
+    bot.run(config.token)
