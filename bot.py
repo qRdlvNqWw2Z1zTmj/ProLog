@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import discord
 from discord.ext import commands
 import aiohttp
@@ -20,6 +19,4 @@ class Boat(commands.Bot):
             return
         
         await self.process_commands(message)
-=======
-# Test
->>>>>>> 515cd39631153fb6b373021f54d4f59d94b06d3e
+
