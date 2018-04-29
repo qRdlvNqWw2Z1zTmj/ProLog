@@ -14,7 +14,7 @@ class ProLog(commands.Bot):
     async def on_ready(self):
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
-        print(f"Loaded {cogs[:-2]}")
+        print(f"Loaded cogs {', '.join([c for c in self.cogs])}") #seth this is the proper way
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
 
@@ -32,11 +32,9 @@ if __name__ == '__main__':
     bot.remove_command("help")
 
     # Load cogs
-    cogs = ""
     for extension in ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp", "cogs.errorhandler"]:
         try:
             bot.load_extension(extension)
-            cogs += f"{extension[extension.index('.') + 1:]}, "
         except Exception as e:
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()
