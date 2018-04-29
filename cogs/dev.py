@@ -8,6 +8,7 @@ class Dev:
     def __init__(self, bot):
         self.bot = bot
 
+
     @commands.command()
     async def logout(self, ctx):
         """Logs the bot out."""
