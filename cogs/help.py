@@ -16,6 +16,10 @@ class HelpFormatter:
         for command in self.bot.commands:
             try:
                 await command.can_run(self.ctx)
+                if command.hidden:
+                    continue
+                if not command.enabled:
+                    continue
             except commands.CommandError:
                 continue
             else:
