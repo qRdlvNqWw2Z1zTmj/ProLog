@@ -24,5 +24,7 @@ class GuildEvents:
 
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(self.bot.guilds)} servers."))
 
+
+
 def setup(bot):
     bot.add_cog(GuildEvents(bot))
