@@ -30,7 +30,7 @@ if __name__ == '__main__':
     bot = ProLog(command_prefix='?')
 
     # Load cogs
-    for extension in ("cogs.dev"", ""cogs.eval"):
+    for extension in ["cogs.dev"]:
         try:
             bot.load_extension(extension)
         except Exception as e:
