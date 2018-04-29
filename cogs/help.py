@@ -57,8 +57,16 @@ class Help:
         self.bot = bot
 
 
-    @commands.command(help="Shows help and usage for commands, or a command list.\nUsage help:\n/: Argument must be one of the choices mentioned.\n*: Argument is optional\n< >: Argument must be a single item\n[ ]: Argument can be more than one item. Use \"double qoutes\" to include spaces in argument.\n( ): Same as < >, but spaces are automatically included.", usage="*<command>")
+    @commands.command()
     async def help(self, ctx, cmd=None):
+        """Shows help and usage for commands, or a command list.
+        Usage help:
+        Argument must be one of the choices mentioned.
+        *: Argument is optional
+        < >: Argument must be a single item
+        [ ]: Argument can be more than one item. Use \"double qoutes\" to include spaces in argument.
+        ( ): Same as < >, but spaces are automatically included.
+        """
         index = 0
         a = HelpFormatter(ctx)
         await a._init()
