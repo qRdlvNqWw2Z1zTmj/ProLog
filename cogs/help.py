@@ -25,6 +25,11 @@ class HelpFormatter:
                 a.add(command)
                 self.cogs[command.cog_name] = a
 
+        unsorted_cogs = self.cogs
+        sorted_cogs = {}
+        for key in sorted(unsorted_cogs):
+            sorted_cogs.update({key: unsorted_cogs[key]})
+        self.cogs = sorted_cogs
         self.ready = True
 
     async def embed_for_cog(self, cogname):
@@ -33,10 +38,13 @@ class HelpFormatter:
         commands = self.cogs[cogname]
         embed = discord.Embed(title=f'{cogname} category:', color=discord.Color.dark_teal())
         for command in commands:
-            embed.add_field(name=command.name, value=command.short_doc if command.short_doc is not None else 'Unavailable', inline=False)
+            brief = command.__doc__.split('\n')[0] if command.__doc__ is not None else "Unavailable"
+            embed.add_field(name=command.name, value=brief, inline=False)
         embed.set_footer(
             text=f'Page {list(self.cogs.keys()).index(cogname) + 1}/{len(self.cogs)}')  # Set embed footer to pagenumber
-        sorted(embed.fields, key=attrgetter('name'))  # Sort embed fields by name
+        fields = sorted(embed.fields, key=attrgetter('name'))  # Sort embed fields by name
+        for index, field in enumerate(fields):
+            embed.set_field_at(index, name=field.name, value=field.value, inline=field.inline)
         return embed
 
     async def embed_for_command(self, command):
@@ -47,7 +55,9 @@ class HelpFormatter:
         embed = discord.Embed(title=f'Help and usage for command `{command.name}`', color=discord.Color.dark_teal())
         embed.add_field(name='Usage:', value=f'{self.ctx.prefix}{command.name} {command.usage}')
         embed.add_field(name='Help:', value=command.help)
-        sorted(embed.fields, key=attrgetter('name'))  # Sort embed fields by name
+        fields = sorted(embed.fields, key=attrgetter('name'))  # Sort embed fields by name
+        for index, field in enumerate(fields):
+            embed.set_field_at(index, name=field.name, value=field.value, inline=field.inline)
         return embed
 
 
@@ -71,6 +81,7 @@ class Help:
         a = HelpFormatter(ctx)
         await a._init()
         cogs = [cog for cog in a.cogs.keys()]
+        cogs.sort()
 
         async def interactive(formatter, msg, index, cogs, info):
             msg = await ctx.channel.get_message(msg.id)
