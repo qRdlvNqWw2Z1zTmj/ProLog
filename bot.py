@@ -1,5 +1,5 @@
 import discord
-from config import token
+import config
 from discord.ext import commands
 
 bot = commands.Bot()
@@ -23,5 +23,6 @@ class Bot(commands.Bot):
         await self.process_commands(message)
 
 
-bot.run(token)
+def run(self):
+    super().run(config.token, reconnect=True)
 
