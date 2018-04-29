@@ -9,6 +9,7 @@ from discord.ext import commands
 class Eval:
     def __init__(self, bot):
         self.bot = bot
+        self._last_result = None
 
     def cleanup_code(self, content):
         """Automatically removes code blocks from the code."""

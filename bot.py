@@ -28,7 +28,7 @@ class ProLog(commands.Bot):
 
 if __name__ == '__main__':
     # Def bot
-    bot = ProLog(command_prefix='?')
+    bot = ProLog(command_prefix=['?', "!"])
 
     # Load cogs
     for extension in ["cogs.dev", "cogs.eval", "cogs.general"]:
