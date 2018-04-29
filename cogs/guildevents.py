@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
-import asyncio
 import datetime
+
 
 class GuildEvents:
     def __init__(self, bot):
@@ -15,7 +15,6 @@ class GuildEvents:
         await self.joinch.send(embed=em)
 
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(self.bot.guilds)} servers."))
-
 
     async def on_guild_remove(self, server):
         owner = str(self.bot.get_user(server.owner_id))
