@@ -40,11 +40,9 @@ if __name__ == '__main__':
 
 
     # Load cogs
-    cogs = ""
-    for extension in ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp"]:
+    for extension in ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp", "cogs.errorhandler"]:
         try:
             bot.load_extension(extension)
-            cogs += f"{extension[extension.index('.') + 1:]}, "
         except Exception as e:
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()
