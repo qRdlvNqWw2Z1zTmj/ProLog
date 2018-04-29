@@ -32,7 +32,7 @@ if __name__ == '__main__':
     bot.remove_command('help')
 
     # Load cogs
-    for extension in ["cogs.dev", "cogs.eval", "cogs.general", "cogs.temp"]:
+    for extension in ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp"]:
         try:
             bot.load_extension(extension)
         except Exception as e:
