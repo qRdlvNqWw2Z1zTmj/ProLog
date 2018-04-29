@@ -161,7 +161,8 @@ class Help:
 
     @commands.command()
     async def invite(self, ctx):
-        embed = discord.Embed(description='[Bot invite](https://discordapp.com/api/oauth2/authorize?client_id=440113872523755520&permissions=0&scope=bot)\n[Support server invite](https://discord.gg/gZESRN5)')
+        embed = discord.Embed(title='Invites:', description='[Bot invite](https://discordapp.com/api/oauth2/authorize?client_id=440113872523755520&permissions=0&scope=bot)\n[Support server invite](https://discord.gg/gZESRN5)', color=discord.Color.dark_teal())
+        await ctx.send(embed=embed)
 
 def setup(bot):
     bot.remove_command('help')
