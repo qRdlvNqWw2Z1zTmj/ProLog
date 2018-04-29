@@ -1,7 +1,7 @@
 import asyncio
 from operator import attrgetter
 from .utils import functions
-#pylint: disable=E402
+
 import discord
 from discord.ext import commands
 

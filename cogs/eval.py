@@ -3,7 +3,7 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 from .utils import functions
-#pylint: disable=E402
+
 from discord.ext import commands
 
 
