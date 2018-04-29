@@ -1,4 +1,3 @@
-from .utils import functions
 from discord.ext import commands
 
 class Temp:
