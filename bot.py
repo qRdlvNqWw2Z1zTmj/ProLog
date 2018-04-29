@@ -1,11 +1,10 @@
 import discord
-from config import token
 from discord.ext import commands
-import aiohttp
+
 import config
 
 
-class Bot(commands.Bot):
+class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -25,5 +24,5 @@ class Bot(commands.Bot):
 
 
 if __name__ == '__main__':
-    bot = Bot(command_prefix='?')
+    bot = ProLog(command_prefix='?')
     bot.run(config.token)
