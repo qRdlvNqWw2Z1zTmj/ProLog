@@ -1,10 +1,10 @@
+import datetime
+import sys
+import traceback
 
 import discord
 from discord.ext import commands
-import asyncio
-import traceback
-import sys
-import datetime
+
 
 class ErrorHandler:
     def __init__(self, bot):
@@ -25,33 +25,26 @@ class ErrorHandler:
                 a = []
                 for i in error.missing_perms:
                     a.append(' '.join(i.split('_')))
-                await ctx.send('{1.author.mention} Missing permissions: {0}'.format(', '.join(a), ctx))
+                await ctx.send(f'{ctx.author.mention} Missing permissions: {", ".join(a)}')
                 return
             elif isinstance(error, commands.MissingPermissions):
                 a = []
                 for i in error.missing_perms:
                     a.append(' '.join(i.split('_')))
-                await ctx.send('{1.author.mention} Missing permissions: {0}'.format(', '.join(a), ctx))
+                await ctx.send(f'{ctx.author.mention} Missing permissions: {", ".join(a)}')
                 return
             else:
                 return
 
         elif isinstance(error, commands.TooManyArguments):
-            await ctx.send('You gave me too many arguments!')
+            await ctx.send('You passed too many arguments')
             return
-    
-        elif isinstance(error, commands.CommandNotFound):
-            if ctx.guild.id in (264445053596991498, 110373943822540800):
 
-                return
-            await ctx.send('Command not found.')
-            return
         
         elif isinstance(error, commands.CommandOnCooldown):
-            await ctx.send('Command is on cooldown for {} more seconds.'.format(round(error.retry_after, 2)))
+            await ctx.send(f'Command is on cooldown for {round(error.retry_after, 2)} more seconds.')
             return
-        
-    
+
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f'{ctx.author.mention} Missing required argument: {str(error.param).split(":")[0]}')
   
@@ -67,7 +60,7 @@ class ErrorHandler:
             except:
                 pass
           
-        print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+        print('Ignoring exception in command {ctx.command}:', file=sys.stderr)
         traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
 
 def setup(bot):
