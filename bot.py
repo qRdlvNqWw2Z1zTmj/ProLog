@@ -9,14 +9,17 @@ import config
 
 class Prefixes:
     def __init__(self):
-        self.file = open('prefixes.json', 'w')
         try:
             with open('prefixes.json', 'r') as f:
                 self._data = json.load(f)
-        except json.decoder.JSONDecodeError:
-            json.dump({}, self.file)
+        except (json.decoder.JSONDecodeError, FileNotFoundError):
+            with open('prefixes.json', 'w') as f:
+                json.dump({}, f)
             self._data = {}
+        self.file = open('prefixes.json', 'w')
+
         
+        print(self._data)
 
     def __getitem__(self, item):
         return self._data[item]
@@ -60,6 +63,7 @@ class ProLog(commands.Bot):
         try:
             prefixes = self.prefixes[str(message.guild.id)]
         except KeyError:
+            print('keyerror')
             self.prefixes[str(message.guild.id)] = ['!']
             self.prefixes.save()
             prefixes = self.prefixes[str(message.guild.id)]
