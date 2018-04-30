@@ -50,7 +50,7 @@ class ErrorHandler:
 
 
         else:
-            msg = f"Guild: {ctx.guild.name}\nGuild ID: {ctx.guild.id}\nChannel: {ctx.channel.name}\nChannel ID:{ctx.channel.id}\nUser: {str(ctx.author)}\nUser ID: {ctx.author.id}\nCommand name: {ctx.command.name}"
+            msg = f"Guild: {ctx.guild.name}\nGuild ID: {ctx.guild.id}\nChannel: {ctx.channel.name}\nChannel ID:{ctx.channel.id}\nUser: {str(ctx.author)}\nUser ID: {ctx.author.id}\nCommand name: {ctx.command.name if ctx.command is not None else None}"
             t = traceback.format_exception(type(error), error, error.__traceback__)
             
             a = ' '.join(t)
