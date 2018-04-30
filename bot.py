@@ -36,11 +36,9 @@ class ProLog(commands.Bot):
         
     async def prefix(self, message):
         try:
-            print(self.prefixes)
             prefixes = self.prefixes[str(message.guild.id)]
         except KeyError:
             self.prefixes[str(message.guild.id)] = ['!']
-            print(self.prefixes)
             prefixes = self.prefixes[str(message.guild.id)]
         return commands.when_mentioned_or(*prefixes)(self, message)
 
