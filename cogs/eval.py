@@ -8,7 +8,6 @@ from discord.ext import commands
 
 from .utils import functions
 
-
 class Eval:
     def __init__(self, bot):
         self.bot = bot
