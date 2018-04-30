@@ -1,3 +1,5 @@
+from .utils import functions
+
 from discord.ext import commands
 import discord
 
@@ -23,7 +25,14 @@ class General:
 
     @prefix.command()
     async def add(self, ctx, prefix):
-        pass
+        try:
+            prefs = self.bot.prefixes[str(ctx.guild.id)]
+            prefs.append(prefix)
+            self.bot.prefixes[str(ctx.guild.id)] = prefs
+        except KeyError:
+            self.bot.prefixes[str(ctx.guild.id)] = [prefix]
+
+        functions.completed(ctx.message)
 
     @prefix.command()
     async def remove(self, ctx, prefix):

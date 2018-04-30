@@ -10,22 +10,25 @@ import config
 
 class Prefixes:
     def __init__(self):
+        self.file = open('prefixes.json', 'w')
         try:
-            self.file = open('prefixes.json', 'r')
-        except FileNotFoundError:
-            with open('prefixes.json', 'w') as f:
-                json.dump({}, f)
-            self.file = open('prefixes.json', 'r')
-        self._data = json.load(f)
+            with open('prefixes.json', 'r') as f:
+                self._data = json.load(f)
+        except json.decoder.JSONDecodeError:
+            json.dump({}, self.file)
+            self._data = {}
+        
 
     def __getitem__(self, item):
         return self._data[item]
 
     def __setitem__(self, item, value):
         self._data[item] = value
+        self.save()
 
     def __delitem__(self, item):
         del self._data[item]
+        self.save()
 
     def save(self):
         self.file.seek(0)
@@ -77,4 +80,8 @@ if __name__ == '__main__':
             traceback.print_exc()
 
     # Run bot
-    bot.run(config.token)
+    try:
+        bot.run(config.token)
+    finally:
+        bot.prefixes.save()
+        bot.prefixes.close()
