@@ -15,7 +15,7 @@ class ErrorHandler:
         if self.errorch is None:
             self.errorch = self.bot.get_channel(440200135604043797)
 
-        ignored = (discord.Forbidden)
+        ignored = (discord.Forbidden, commands.CommandNotFound)
     
         if isinstance(error, ignored):
             return
