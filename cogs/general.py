@@ -28,11 +28,12 @@ class General:
         try:
             prefs = self.bot.prefixes[str(ctx.guild.id)]
             prefs.append(prefix)
-            self.bot.prefixes[str(ctx.guild.id)] = prefs
+            prefs.sort()
+            self.bot.prefixes[str(ctx.guild.id)] = list(set(prefs))
         except KeyError:
             self.bot.prefixes[str(ctx.guild.id)] = [prefix]
 
-        functions.completed(ctx.message)
+        await functions.completed(ctx.message)
 
     @prefix.command()
     async def remove(self, ctx, prefix):
