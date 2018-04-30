@@ -46,14 +46,17 @@ class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.prefixes = Prefixes()
         super().__init__(*args, **kwargs)
+        self.db = self.loop.create_task(asyncpg.create_pool(config.postgresql))
 
     async def on_ready(self):
-        self.db = await asyncpg.create_pool(config.postgresql)
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
+        print(f"Logged into PostgresSQL server" if self.db is not None else "Failed to log into PostgreSQl server")
         print(f"Loaded cogs {', '.join([c for c in self.cogs])}")
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
+
+
 
     async def on_message(self, message):
         if not isinstance(message.channel, discord.TextChannel):
