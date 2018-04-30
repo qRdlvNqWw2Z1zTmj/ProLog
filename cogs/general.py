@@ -13,7 +13,7 @@ class General:
         await ctx.send(arg)
         await ctx.message.delete()
 
-    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
+    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref']) #Fix this seth thx
     async def prefix(self, ctx):
         prefixes = await self.bot.get_prefix(ctx.message)
         prefixes.remove(f'<@{ctx.guild.me.id}> ') #Not using .mention because it can return <@ID> or <@!ID> 
