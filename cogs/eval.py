@@ -2,9 +2,10 @@ import io
 import textwrap
 import traceback
 from contextlib import redirect_stdout
-from .utils import functions
 
 from discord.ext import commands
+
+from .utils import functions
 
 
 class Eval:
