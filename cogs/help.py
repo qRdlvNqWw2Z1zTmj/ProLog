@@ -43,7 +43,7 @@ class HelpFormatter:
         commands = self.cogs[cogname]
         embed = discord.Embed(title=f'{cogname} category:', color=discord.Color.dark_teal())
         for command in commands:
-            brief = command.__doc__.split('\n')[0] if command.__doc__ is not None else "Unavailable"
+            brief = command.short_doc if len(command.short_doc) != 0 else "Help unavailable"
             embed.add_field(name=command.name, value=brief, inline=False)
         embed.set_footer(
             text=f'Page {list(self.cogs.keys()).index(cogname) + 1}/{len(self.cogs)}')  # Set embed footer to pagenumber
