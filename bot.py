@@ -18,9 +18,6 @@ class Prefixes:
             self._data = {}
         self.file = open('prefixes.json', 'w')
 
-        
-        print(self._data)
-
     def __getitem__(self, item):
         return self._data[item]
 
