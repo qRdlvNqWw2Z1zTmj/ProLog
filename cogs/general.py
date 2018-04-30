@@ -1,7 +1,8 @@
+import discord
+from discord.ext import commands
+
 from .utils import functions
 
-from discord.ext import commands
-import discord
 
 class General:
     def __init__(self, bot):
