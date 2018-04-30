@@ -8,16 +8,36 @@ from discord.ext import commands
 
 import config
 
-
-class ProLog(commands.Bot):
-    def __init__(self, *args, **kwargs):
+class Prefixes:
+    def __init__(self):
         try:
-            self.pref_file = open('prefixes.json', 'r')
+            self.file = open('prefixes.json', 'r')
         except FileNotFoundError:
             with open('prefixes.json', 'w') as f:
                 json.dump({}, f)
-            self.pref_file = open('prefixes.json', 'r')
-        self.prefixes = json.load(self.pref_file)
+            self.file = open('prefixes.json', 'r')
+        self._data = json.load(f)
+
+    def __getitem__(self, item):
+        return self._data[item]
+
+    def __setitem__(self, item, value):
+        self._data[item] = value
+
+    def __delitem__(self, item):
+        del self._data[item]
+
+    def save(self):
+        self.file.seek(0)
+        json.dump(self._data, self.file)
+    
+    def close(self):
+        self.file.close()
+    
+
+class ProLog(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        self.prefixes = Prefixes()
         super().__init__(*args, **kwargs)
 
     async def on_ready(self):
@@ -39,6 +59,7 @@ class ProLog(commands.Bot):
             prefixes = self.prefixes[str(message.guild.id)]
         except KeyError:
             self.prefixes[str(message.guild.id)] = ['!']
+            self.prefixes.save()
             prefixes = self.prefixes[str(message.guild.id)]
         return commands.when_mentioned_or(*prefixes)(self, message)
 
