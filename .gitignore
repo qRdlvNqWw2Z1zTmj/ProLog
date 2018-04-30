@@ -1,6 +1,7 @@
 # Additions
 .idea/
 config.py
+prefixes.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
