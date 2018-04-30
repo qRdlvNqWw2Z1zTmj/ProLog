@@ -1,11 +1,13 @@
+import json
 import sys
 import traceback
-import json
 
+import asyncpg
 import discord
 from discord.ext import commands
 
 import config
+
 
 class Prefixes:
     def __init__(self):
@@ -46,6 +48,7 @@ class ProLog(commands.Bot):
         super().__init__(*args, **kwargs)
 
     async def on_ready(self):
+        self.db = await asyncpg.create_pool(config.postgresql)
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
         print(f"Loaded cogs {', '.join([c for c in self.cogs])}")
