@@ -20,9 +20,9 @@ class General:
         prefixes = await self.bot.get_prefix(ctx.message)
         prefixes.remove(f'<@{ctx.guild.me.id}> ') #Not using .mention because it can return <@ID> or <@!ID> 
         prefixes.remove(f'<@!{ctx.guild.me.id}> ')
-        stuff = '**\n**'.join(prefixes)
-        desc = f'**{stuff}**'
-        embed = discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description=desc)
+        stuff = '`\n`'.join(prefixes)
+        desc = f'`{stuff}`'
+        embed = discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description=desc, color=discord.Color.dark_teal())
         await ctx.send(embed=embed)
 
     @prefix.command(aliases=['create'])
