@@ -19,5 +19,4 @@ if __name__ == '__main__':
     try:
         bot.run(config.testingtoken)
     finally:
-        bot.prefixes.save()
-        bot.prefixes.close()
+        pass
