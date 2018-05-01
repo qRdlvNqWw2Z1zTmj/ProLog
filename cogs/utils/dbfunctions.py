@@ -54,6 +54,7 @@ class PrefixesClass:
     async def close(self):
         if await self.verify_con():
             await self.con.close()
+            self.con = None
 
         
             
@@ -85,3 +86,4 @@ class ConfigClass:
     async def close(self):
         if await self.verify_con():
             await self.con.close()
+            self.con = None
