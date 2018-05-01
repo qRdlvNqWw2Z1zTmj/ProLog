@@ -79,13 +79,14 @@ class ConfigClass:
             SELECT configs FROM Configs WHERE GuildID = {item};
             ''')
             try:
-                res = json.loads(res[0]['prefixes'])
+                res = json.loads(res[0]['configs'])
                 self.data[str(item)] = res
             except IndexError:
-                await self.setitem(item, {})
+                await self.set(item, {})
                 return await self.__getitem__(item)
+        return res
 
-    async def setitem(self, item: int, value):
+    async def set(self, item: int, value):
         value = json.dumps(value)
         try:
             await self.execute(f'''
