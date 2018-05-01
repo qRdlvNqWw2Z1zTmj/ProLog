@@ -7,7 +7,9 @@ class Typinglog:
 
     async def on_typing(self, channel, user, when):
         if not isinstance(channel, discord.TextChannel): return
-        channels = await self.bot.config.get(channel.guild.id)
+        config = await self.bot.config.get(channel.guild.id)
+        if config is None: return
+        channels = config.get('typing')
         if channels is None: return
         embed = discord.Embed(title='User started typing:', description=f'''
         **User**: {str(user)}
