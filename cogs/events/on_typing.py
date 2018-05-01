@@ -22,3 +22,6 @@ class Typinglog:
     @commands.command()
     async def logtyping(self):
         pass
+
+def setup(bot):
+    bot.add_cog(Typinglog(bot))
