@@ -43,12 +43,14 @@ class Prefixes:
 class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.prefixes = None
+        self.config = None
         super().__init__(*args, **kwargs)
         self.loop.create_task(self.__init())
 
     async def __init(self):
         self.db = await asyncpg.create_pool(config.postgresql)
         self.prefixes = dbfunctions.PrefixesClass(self)
+        self.config = dbfunctions.ConfigClass(self)
 
     async def on_ready(self):
         print('=' * 10)
@@ -75,6 +77,11 @@ class ProLog(commands.Bot):
             prefixes = self.prefixes[str(message.guild.id)]
         return commands.when_mentioned_or(*prefixes)(self, message)
 
+    @commands.command()
+    async def close_db(self):
+        await self.config.close()
+        await self.prefixes.close()
+
 
 if __name__ == '__main__':
     # Def bot
@@ -92,4 +99,4 @@ if __name__ == '__main__':
     try:
         bot.run(config.token)
     finally:
-        bot.prefixes.close()
+        pass
