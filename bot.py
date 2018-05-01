@@ -1,6 +1,7 @@
 import json
 import sys
 import traceback
+from cogs.utils import dbfunctions
 
 import asyncpg
 import discord
@@ -41,9 +42,9 @@ class Prefixes:
 
 class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
-        self.prefixes = Prefixes()
-        super().__init__(*args, **kwargs)
+        self.prefixes = None
         self.db = None
+        super().__init__(*args, **kwargs)
 
     async def init_pool(self):
         return await asyncpg.create_pool(config.postgresql)
@@ -51,6 +52,7 @@ class ProLog(commands.Bot):
     async def on_ready(self):
         try:
             self.db = await self.init_pool()
+            self.prefixes = dbfunctions.PrefixesClass(self)
         except Exception as e:
             print(e, file=sys.stderr)
             traceback.print_exc
@@ -72,11 +74,10 @@ class ProLog(commands.Bot):
         
     async def prefix(self, message):
         try:
-            prefixes = self.prefixes[str(message.guild.id)]
+            prefixes = await self.prefixes[message.guild.id]
         except KeyError:
             print('keyerror')
-            self.prefixes[str(message.guild.id)] = ['!']
-            self.prefixes.save()
+            await self.prefixes.setitem(message.guild.id, ['!'])
             prefixes = self.prefixes[str(message.guild.id)]
         return commands.when_mentioned_or(*prefixes)(self, message)
 
@@ -97,5 +98,4 @@ if __name__ == '__main__':
     try:
         bot.run(config.token)
     finally:
-        bot.prefixes.save()
         bot.prefixes.close()

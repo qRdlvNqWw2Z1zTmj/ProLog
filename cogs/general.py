@@ -29,21 +29,23 @@ class General:
     @prefix.command(aliases=['create'])
     async def add(self, ctx, prefix):
         try:
-            prefs = self.bot.prefixes[str(ctx.guild.id)]
+            prefs = await self.bot.prefixes[str(ctx.guild.id)]
             prefs.append(prefix)
             prefs.sort()
-            self.bot.prefixes[str(ctx.guild.id)] = list(set(prefs))
+            await self.bot.prefixes.setitem(ctx.guild.id, list(set(prefs)))
         except KeyError:
-            self.bot.prefixes[str(ctx.guild.id)] = [prefix]
+            await self.bot.prefixes.setitem(ctx.guild.id, [prefix])
 
         await functions.completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, prefix):
         try:
-            prefs = self.bot.prefixes[str(ctx.guild.id)]
+            prefs = await self.bot.prefixes[str(ctx.guild.id)]
+            if len(prefs) == 1:
+                return await ctx.send('You can\'t have less than one prefix!')
             prefs.remove(prefix)
-            self.bot.prefixes[str(ctx.guild.id)] = prefs
+            await self.bot.prefixes.setitem(ctx.guild.id, prefs)
         except (KeyError, ValueError):
             return await ctx.send(f'Prefix `{prefix}` does not exist.')
 
