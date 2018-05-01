@@ -52,7 +52,7 @@ class ProLog(commands.Bot):
         self.db = await self.init_pool()
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
-        print(f"Logged into PostgresSQL server" if self.db is not None else "Failed to log into PostgreSQl server")
+        print("Logged into PostgresSQL server" if self.db is not None else "Failed to log into PostgreSQl server")
         print(f"Loaded cogs {', '.join([c for c in self.cogs])}")
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
