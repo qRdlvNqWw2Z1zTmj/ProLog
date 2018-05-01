@@ -43,26 +43,20 @@ class Prefixes:
 class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.prefixes = None
-        self.db = None
         super().__init__(*args, **kwargs)
+        self.loop.create_task(self.__init())
 
-    async def init_pool(self):
-        return await asyncpg.create_pool(config.postgresql)
+    async def __init(self):
+        self.db = await asyncpg.create_pool(config.postgresql)
+        self.prefixes = dbfunctions.PrefixesClass(self)
 
     async def on_ready(self):
-        try:
-            self.db = await self.init_pool()
-            self.prefixes = dbfunctions.PrefixesClass(self)
-        except Exception as e:
-            print(e, file=sys.stderr)
-            traceback.print_exc
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
         print("Logged into PostgresSQL server" if self.db is not None else "Failed to log into PostgreSQl server")
         print(f"Loaded cogs {', '.join([c for c in self.cogs])}")
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
-
 
 
     async def on_message(self, message):
