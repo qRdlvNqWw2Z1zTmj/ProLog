@@ -22,17 +22,19 @@ class Typinglog:
             await channel.send(embed=embed)
 
     @commands.command()
-    async def logtyping(self, ctx):
+    async def logtyping(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel
         config = await self.bot.config[ctx.channel.guild.id]
         channels = []
         if config is not None: channels = config.get('typing')
         if channels is None: channels = []
-        if ctx.channel.id not in channels:
-            new = channels + [ctx.channel.id]
-            await ctx.send('Started logging typing to this channel!')
+        if channel.id not in channels:
+            new = channels + [channel.id]
+            await ctx.send(f'Started logging typing to <#{channel.id}>!')
         else:
-            new = channels.remove(ctx.channel.id)
-            await ctx.send('Stopped logging typing to this channel!')
+            new = channels.remove(channel.id)
+            await ctx.send(f'Stopped logging typing to <#{channel.id}>')
         config['typing'] = new
         await self.bot.config.set(ctx.channel.guild.id, config)
         
