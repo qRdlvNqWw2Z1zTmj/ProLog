@@ -7,7 +7,6 @@ from discord.ext import commands
 class Dev:
     def __init__(self, bot):
         self.bot = bot
-        self.bd = db
 
     @commands.command()
     async def logout(self, ctx):
@@ -15,7 +14,8 @@ class Dev:
         self.bot.update = False
         await asyncio.sleep(60)
         await ctx.send('Logged out')
-        await db.close()
+        await self.bot.prefixes.close()
+        await self.bot.configs.close()
         self.bot.logout()
 
 
