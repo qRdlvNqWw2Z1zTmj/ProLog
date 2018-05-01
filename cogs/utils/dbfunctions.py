@@ -58,4 +58,30 @@ class PrefixesClass:
         
             
 
-class ConfigClass: pass
+class ConfigClass:
+    def __init__(self, bot):
+        self.bot = bot
+        self.db = bot.db
+        self.con = None
+        self.data = {}
+
+    async def create_con(self):
+        self.con = await self.db.acquire()
+
+    async def verify_con(self):
+        if self.con is None:
+            await self.create_con()
+            return await self.verify_con()
+        return True
+
+    async def execute(self, query: str, *args, timeout: float=None):
+        if await self.verify_con():
+            return await self.con.execute(query, *args, timeout=timeout)
+
+    async def fetch(self, query, *args, timeout=None):
+        if await self.verify_con():
+            return await self.con.fetch(query, *args, timeout=timeout)
+
+    async def close(self):
+        if await self.verify_con():
+            await self.con.close()
