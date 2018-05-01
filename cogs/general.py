@@ -14,7 +14,7 @@ class General:
         await ctx.send(arg)
         await ctx.message.delete()
 
-    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref']) #Fix this seth thx
+    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
     async def prefix(self, ctx):
         if ctx.invoked_subcommand is not None:
             return
