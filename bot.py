@@ -43,9 +43,13 @@ class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.prefixes = Prefixes()
         super().__init__(*args, **kwargs)
-        self.db = self.loop.create_task(asyncpg.create_pool(config.postgresql))
+        self.db = None
+
+    async def init_pool(self):
+        return await asyncpg.create_pool(config.postgresql)
 
     async def on_ready(self):
+        self.db = await self.init_pool()
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
         print(f"Logged into PostgresSQL server" if self.db is not None else "Failed to log into PostgreSQl server")
