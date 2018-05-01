@@ -15,8 +15,13 @@ class PrefixesClass:
             res = await self.fetch(f'''
             SELECT prefixes FROM Prefixes WHERE GuildID = {item};
             ''')
-            res = json.loads(res[0]['prefixes'])
-            self.data[str(item)] = res
+            try:
+                res = json.loads(res[0]['prefixes'])
+                self.data[str(item)] = res
+            except IndexError:
+                await self.setitem(item, ['!'])
+                return await self.__getitem__(item)
+            
         return res
 
     async def setitem(self, item: int, value): #Was gonna use __setitem__ ,but await PrefixesClass[something] = blah wont work, only await PrefixesClass.__setitem__
@@ -65,6 +70,31 @@ class ConfigClass:
         self.db = bot.db
         self.con = None
         self.data = {}
+
+    async def __getitem__(self, item: int):
+        try:
+            res = self.data[str(item)]
+        except KeyError:
+            res = await self.fetch(f'''
+            SELECT configs FROM Configs WHERE GuildID = {item};
+            ''')
+            res = json.loads(res[0]['configs'])
+            self.data[str(item)] = res
+        return res
+
+    async def setitem(self, item: int, value):
+        value = json.dumps(value)
+        try:
+            await self.execute(f'''
+            INSERT INTO Configs (GuildID, configs) VALUES ({item}, '{value}');
+            ''')
+        except asyncpg.exceptions.UniqueViolationError:
+            await self.execute(f'''
+            UPDATE Configs SET GuildID={item}, configs='{value}' WHERE GuildID = {item};
+            ''')
+        try:
+            del self.data[str(item)]
+        except KeyError: pass
 
     async def create_con(self):
         self.con = await self.db.acquire()
