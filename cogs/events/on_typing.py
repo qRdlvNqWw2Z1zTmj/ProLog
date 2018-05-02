@@ -25,18 +25,10 @@ class Typinglog:
     async def logtyping(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
             channel = ctx.channel
-        config = await self.bot.config[ctx.channel.guild.id]
-        channels = []
-        if config is not None: channels = config.get('typing')
-        if channels is None: channels = []
-        if channel.id not in channels:
-            new = channels + [channel.id]
+        if await self.bot.config.togglechannel(ctx.guild.id, 'typing', channel.id:
             await ctx.send(f'Started logging typing to <#{channel.id}>!')
         else:
-            new = channels.remove(channel.id)
             await ctx.send(f'Stopped logging typing to <#{channel.id}>')
-        config['typing'] = new
-        await self.bot.config.set(ctx.channel.guild.id, config)
         
         
 
