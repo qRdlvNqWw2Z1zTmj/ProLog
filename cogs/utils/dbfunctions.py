@@ -99,6 +99,22 @@ class ConfigClass:
         try:
             del self.data[str(item)]
         except KeyError: pass
+        
+    async def togglechannel(self, GuildID: int, type: str, ChannelID: int):
+        config = self[GuildID]
+        chanels = config.get(type)
+        if channels is None: channels = []
+        if ChannelID in channels:
+            new = channels + [channel.id]
+            config[type] = new
+            await self.set(ctx.channel.guild.id, config)
+            return True
+        else:
+            new = channels.remove(channel.id)
+            config[type] = new
+            await self.set(ctx.channel.guild.id, config)
+            return False
+
 
     async def create_con(self):
         self.con = await self.db.acquire()
