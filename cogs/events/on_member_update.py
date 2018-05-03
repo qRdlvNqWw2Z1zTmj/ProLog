@@ -15,7 +15,7 @@ class MemberUpdateLog:
         if before.nick != after.nick:
             embed = discord.Embed(title=f"User {str(after)} changed their nickname:", description=f"""
             **Before**: {before.nick if before.nick is not None else str(before)}
-            **After**: {str(after)}>
+            **After**: {after.nick}>
             """, color=discord.Color.dark_teal())
             for channel in channels:
                 channel = self.bot.get_channel(channel)
