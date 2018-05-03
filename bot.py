@@ -9,7 +9,7 @@ import config
 from cogs.utils import dbfunctions
 
 EXTENSIONS = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
-              "cogs.guildevents", "cogs.events.on_typing"]
+              "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update"]
 
 
 class ProLog(commands.Bot):
