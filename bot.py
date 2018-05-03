@@ -1,4 +1,3 @@
-import json
 import sys
 import traceback
 from cogs.utils import dbfunctions
@@ -10,36 +9,6 @@ from discord.ext import commands
 import config
 
 EXTENSIONS = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp", "cogs.errorhandler", "cogs.guildevents", "cogs.events.on_typing"]
-
-class Prefixes:
-    def __init__(self):
-        try:
-            with open('prefixes.json', 'r') as f:
-                self._data = json.load(f)
-        except (json.decoder.JSONDecodeError, FileNotFoundError):
-            with open('prefixes.json', 'w') as f:
-                json.dump({}, f)
-            self._data = {}
-        self.file = open('prefixes.json', 'w')
-
-    def __getitem__(self, item):
-        return self._data[item]
-
-    def __setitem__(self, item, value):
-        self._data[item] = value
-        self.save()
-
-    def __delitem__(self, item):
-        del self._data[item]
-        self.save()
-
-    def save(self):
-        self.file.seek(0)
-        json.dump(self._data, self.file)
-    
-    def close(self):
-        self.file.close()
-    
 
 class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
