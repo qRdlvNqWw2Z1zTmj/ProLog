@@ -25,7 +25,7 @@ class Typinglog:
     async def logtyping(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
             channel = ctx.channel
-        if await self.bot.config.togglechannel(ctx.guild.id, 'typing', channel.id:
+        if await self.bot.config.togglechannel(ctx.guild.id, 'typing', channel.id):
             await ctx.send(f'Started logging typing to <#{channel.id}>!')
         else:
             await ctx.send(f'Stopped logging typing to <#{channel.id}>')
