@@ -45,8 +45,8 @@ class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.prefixes = None
         self.config = None
+        self.db = None
         super().__init__(*args, **kwargs)
-        self.loop.create_task(self.__init())
 
     async def __init(self):
         self.db = await asyncpg.create_pool(config.postgresql)
@@ -54,6 +54,11 @@ class ProLog(commands.Bot):
         self.config = dbfunctions.ConfigClass(self)
 
     async def on_ready(self):
+        if self.db is None:
+            try:
+                await self.__init()
+            except TimeoutError as e:
+                print(e)
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
         print("Logged into PostgresSQL server" if self.db is not None else "Failed to log into PostgreSQl server")
@@ -76,6 +81,8 @@ class ProLog(commands.Bot):
             print('keyerror')
             await self.prefixes.setitem(message.guild.id, ['!'])
             prefixes = self.prefixes[str(message.guild.id)]
+        except:
+            return commands.when_mentioned(self, message)
         return commands.when_mentioned_or(*prefixes)(self, message)
 
     @commands.command()
