@@ -11,6 +11,7 @@ class MemberUpdateLog:
         channels = config.get('MemberUpdateLogs')
         if channels is None: return
 
+
         if before.nick != after.nick:
             embed = discord.Embed(title=f"User {str(after)} changed their nickname:", description=f"""
             **Before**: {before.nick if before.nick is not None else str(before)}
