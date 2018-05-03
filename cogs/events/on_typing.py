@@ -13,7 +13,7 @@ class Typinglog:
         start = datetime.datetime.now()
         if not isinstance(channel, discord.TextChannel): return
         config = await self.bot.config[channel.guild.id]
-        channels = config.get('typing')
+        channels = config.get('TypingLogs')
         if channels is None: return
         try:
             await self.bot.wait_for("message", check=lambda m : m.author == member and m.channel == channel, timeout=10.0)
@@ -36,7 +36,7 @@ class Typinglog:
     async def logtyping(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
             channel = ctx.channel
-        if await self.bot.config.togglechannel(ctx.guild.id, 'typing', channel.id):
+        if await self.bot.config.togglechannel(ctx.guild.id, 'TypingLogs', channel.id):
             await ctx.send(f'Started logging typing to <#{channel.id}>!')
         else:
             await ctx.send(f'Stopped logging typing to <#{channel.id}>')
