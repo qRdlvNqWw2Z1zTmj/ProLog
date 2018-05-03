@@ -14,7 +14,11 @@ class MemberUpdateLog:
 
         if before.nick != after.nick:
             def escapeformat(cont):
-                return cont.replace('*', '\*').replace('__', '\_\_').replace('`', '\`').replace('~~', '\~\~')
+                cont = cont.replace('*', '\*')
+                cont = cont.replace('__', '\_\_')
+                cont = cont.replace('`', '\`')
+                cont = cont.replace('~~', '\~\~')
+                return cont
             embed = discord.Embed(title=f"User {str(after)} changed their nickname:", description=f"""
             **Before**: {escapeformat(before.nick) if before.nick is not None else escapeformat(before.name)}
 **After**: {escapeformat(after.nick)}
@@ -22,6 +26,8 @@ class MemberUpdateLog:
             for channel in channels:
                 channel = self.bot.get_channel(channel)
                 await channel.send(embed=embed)
+
+        
 
 
     @commands.command()
