@@ -5,37 +5,37 @@ class PrefixesClass:
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
-        self.con = None
-        self.data = {}
+        self.con = None 
+        self.data = {}  #Local cache for faster data retrieval
 
     async def __getitem__(self, item: int):
         try:
-            res = self.data[str(item)]
+            res = self.data[str(item)] #Tries to get results from the cache
         except KeyError:
             res = await self.fetch(f'''
             SELECT prefixes FROM Prefixes WHERE GuildID = {item};
-            ''')
+            ''') #SQL query to get prefixes for guild
             try:
-                res = json.loads(res[0]['prefixes'])
-                self.data[str(item)] = res
-            except IndexError:
-                await self.setitem(item, ['!'])
-                return await self.__getitem__(item)
+                res = json.loads(res[0]['prefixes']) #Json de-serialization
+                self.data[str(item)] = res #Caches the result
+            except IndexError: #Occurs when the entry for prefixes in guild dont exist
+                await self.setitem(item, ['!']) #This sets it to a default value
+                return await self.__getitem__(item) #Recursion!
             
         return res
 
     async def setitem(self, item: int, value): #Was gonna use __setitem__ ,but await PrefixesClass[something] = blah wont work, only await PrefixesClass.__setitem__
-        value = json.dumps(value)
+        value = json.dumps(value) #JSON serialization
         try:
             await self.execute(f'''
             INSERT INTO Prefixes (GuildID, prefixes) VALUES ({item}, '{value}');
-            ''')
-        except asyncpg.exceptions.UniqueViolationError:
+            ''') 
+        except asyncpg.exceptions.UniqueViolationError: #The row already exists
             await self.execute(f'''
             UPDATE Prefixes SET GuildID={item}, prefixes='{value}' WHERE GuildID = {item};
             ''')
         try:
-            del self.data[str(item)]
+            del self.data[str(item)] #Refreshes the cache
         except KeyError: pass
             
 
@@ -69,9 +69,9 @@ class ConfigClass:
         self.bot = bot
         self.db = bot.db
         self.con = None
-        self.data = {}
+        self.data = {} #Local cache for faster data retrieval
 
-    async def __getitem__(self, item: int):
+    async def __getitem__(self, item: int): #These methods should be nearly equal to methods in PrefixesClass
         try:
             res = self.data[str(item)]
         except KeyError:
@@ -86,7 +86,7 @@ class ConfigClass:
                 return await self.__getitem__(item)
         return res
 
-    async def set(self, item: int, value):
+    async def set(self, item: int, value): #These methods should be nearly equal to methods in PrefixesClass
         value = json.dumps(value)
         try:
             await self.execute(f'''
@@ -100,7 +100,7 @@ class ConfigClass:
             del self.data[str(item)]
         except KeyError: pass
         
-    async def togglechannel(self, GuildID: int, type: str, ChannelID: int):
+    async def togglechannel(self, GuildID: int, type: str, ChannelID: int): 
         config = await self[GuildID]
         channels = config.get(type)
         if channels is None: channels = []
