@@ -18,6 +18,7 @@ class GuildEvents:
 
         await self.bot.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(self.bot.guilds)} servers."))
 
+
     async def on_guild_remove(self, server):
         if self.joinch is None:
             self.joinch = self.bot.get_channel(440217627978366987)

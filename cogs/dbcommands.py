@@ -7,6 +7,5 @@ class DatabaseCommands:
 
 
 
-
 def setup(bot):
     bot.add_cog(DatabaseCommands(bot))
