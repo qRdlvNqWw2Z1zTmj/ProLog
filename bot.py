@@ -8,7 +8,9 @@ from discord.ext import commands
 import config
 from cogs.utils import dbfunctions
 
-EXTENSIONS = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp", "cogs.errorhandler", "cogs.guildevents", "cogs.events.on_typing"]
+EXTENSIONS = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
+              "cogs.guildevents", "cogs.events.on_typing"]
+
 
 class ProLog(commands.Bot):
     def __init__(self, *args, **kwargs):
@@ -53,11 +55,6 @@ class ProLog(commands.Bot):
         except:
             return commands.when_mentioned(self, message)
         return commands.when_mentioned_or(*prefixes)(self, message)
-
-    @commands.command()
-    async def close_db(self):
-        await self.config.close()
-        await self.prefixes.close()
 
 
 if __name__ == '__main__':
