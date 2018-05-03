@@ -101,18 +101,18 @@ class ConfigClass:
         except KeyError: pass
         
     async def togglechannel(self, GuildID: int, type: str, ChannelID: int):
-        config = self[GuildID]
-        chanels = config.get(type)
+        config = await self[GuildID]
+        channels = config.get(type)
         if channels is None: channels = []
-        if ChannelID in channels:
-            new = channels + [channel.id]
+        if ChannelID not in channels:
+            new = channels + [ChannelID]
             config[type] = new
-            await self.set(ctx.channel.guild.id, config)
+            await self.set(GuildID, config)
             return True
         else:
-            new = channels.remove(channel.id)
+            new = channels.remove(ChannelID)
             config[type] = new
-            await self.set(ctx.channel.guild.id, config)
+            await self.set(GuildID, config)
             return False
 
 
