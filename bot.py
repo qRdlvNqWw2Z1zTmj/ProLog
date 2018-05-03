@@ -61,10 +61,8 @@ class ProLog(commands.Bot):
 
 
 if __name__ == '__main__':
-    # Def bot
     bot = ProLog(command_prefix=ProLog.prefix)
 
-    # Load cogs
     for extension in EXTENSIONS:
         try:
             bot.load_extension(extension)
@@ -72,7 +70,6 @@ if __name__ == '__main__':
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()
 
-    # Run bot
     try:
         bot.run(config.token)
     finally:

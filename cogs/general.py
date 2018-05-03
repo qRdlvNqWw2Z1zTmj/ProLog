@@ -9,11 +9,6 @@ class General:
         self.bot = bot
 
 
-    @commands.command()
-    async def say(self, ctx, *, arg):
-        await ctx.send(arg)
-        await ctx.message.delete()
-
     @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
     async def prefix(self, ctx):
         if ctx.invoked_subcommand is not None:
@@ -50,6 +45,8 @@ class General:
             return await ctx.send(f'Prefix `{prefix}` does not exist.')
 
         await functions.completed(ctx.message)
+
+
 
 def setup(bot):
     bot.add_cog(General(bot))

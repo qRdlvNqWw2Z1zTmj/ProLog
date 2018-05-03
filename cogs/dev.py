@@ -8,6 +8,19 @@ class Dev:
     def __init__(self, bot):
         self.bot = bot
 
+
+    @commands.command()
+    async def say(self, ctx, *, arg):
+        await ctx.send(arg)
+        await ctx.message.delete()
+
+
+    @commands.command()
+    async def purge(self, ctx, limit: int):
+        """Removes a certain amount of messages."""
+        await ctx.channel.purge(limit=limit)
+
+
     @commands.command()
     async def logout(self, ctx):
         """Logs the bot out."""
