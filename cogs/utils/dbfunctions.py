@@ -16,7 +16,7 @@ class PrefixesClass:
             SELECT prefixes FROM Prefixes WHERE GuildID = {item};
             ''') #SQL query to get prefixes for guild
             try:
-                res = json.loads(res[0]['prefixes']) #Json de-serialization
+                res = json.loads(res[0]['prefixes']) #JSON de-serialization
                 self.data[str(item)] = res #Caches the result
             except IndexError: #Occurs when the entry for prefixes in guild dont exist
                 await self.setitem(item, ['!']) #This sets it to a default value
@@ -24,7 +24,7 @@ class PrefixesClass:
             
         return res
 
-    async def setitem(self, item: int, value): #Was gonna use __setitem__ ,but await PrefixesClass[something] = blah wont work, only await PrefixesClass.__setitem__
+    async def setitem(self, item: int, value): #Was gonna use __setitem__, but await PrefixesClass[something] = blah wont work, only await PrefixesClass.__setitem__
         value = json.dumps(value) #JSON serialization
         try:
             await self.execute(f'''
