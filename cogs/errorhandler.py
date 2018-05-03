@@ -45,6 +45,7 @@ class ErrorHandler:
             await ctx.send(f'Command is on cooldown for {round(error.retry_after, 2)} more seconds.')
             return
 
+
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(f'Required argument {str(error.param).split(":")[0]} is missing. See {self.bot.command_prefix[0]}help {ctx.command.name} for usage')
 
@@ -60,9 +61,10 @@ class ErrorHandler:
                 await self.errorch.send(embed=e)
             except:
                 pass
-          
-        print('Ignoring exception in command {ctx.command}:', file=sys.stderr)
-        traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+            print('Ignoring exception in command {ctx.command}:', file=sys.stderr)
+            traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
+
+
 
 def setup(bot):
     bot.add_cog(ErrorHandler(bot))

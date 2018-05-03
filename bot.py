@@ -1,13 +1,13 @@
 import json
 import sys
 import traceback
-from cogs.utils import dbfunctions
 
 import asyncpg
 import discord
 from discord.ext import commands
 
 import config
+from cogs.utils import dbfunctions
 
 EXTENSIONS = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.temp", "cogs.errorhandler", "cogs.guildevents", "cogs.events.on_typing"]
 

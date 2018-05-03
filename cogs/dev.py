@@ -2,7 +2,7 @@ import asyncio
 import traceback
 
 from discord.ext import commands
-
+from .utils import functions
 
 class Dev:
     def __init__(self, bot):
@@ -27,7 +27,7 @@ class Dev:
         except:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
         else:
-            await ctx.send('\N{OK HAND SIGN}')
+            await functions.completed(ctx.message)
 
 
     @commands.command()
@@ -38,7 +38,7 @@ class Dev:
         except:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
         else:
-            await ctx.send('\N{OK HAND SIGN}')
+            await functions.completed(ctx.message)
 
 
     @commands.command()
@@ -50,9 +50,8 @@ class Dev:
         except:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
             return
-        await ctx.send(f"Successfully reloaded module {module} {ctx.author.mention}")
-
-
+        else:
+            await functions.completed(ctx.message)
 
 
 
