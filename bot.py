@@ -9,7 +9,13 @@ import config
 from cogs.utils import dbfunctions
 
 EXTENSIONS = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
-              "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update"]
+              "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update",
+              "cogs.utils.dbfunctions"]
+
+modules = []
+modules += ["TypingLogs-Typing"]  # Modules for on_typing.py
+modules += ["MemberLogs-Nickname", "MemberLogs-Status"]  # Modules for on_member_update.py
+
 
 
 class ProLog(commands.Bot):
@@ -17,6 +23,7 @@ class ProLog(commands.Bot):
         self.prefixes = None
         self.config = None
         self.db = None
+        self.modules = modules
         super().__init__(*args, **kwargs)
 
     async def __init(self):
@@ -39,12 +46,11 @@ class ProLog(commands.Bot):
 
 
     async def on_message(self, message):
-        if not isinstance(message.channel, discord.TextChannel):
-            return
-        if message.author.bot:
+        if not isinstance(message.channel, discord.TextChannel) or message.author.bot:
             return
         await self.process_commands(message)
-        
+
+
     async def prefix(self, message):
         try:
             prefixes = await self.prefixes[message.guild.id]
@@ -60,10 +66,6 @@ class ProLog(commands.Bot):
 if __name__ == '__main__':
     bot = ProLog(command_prefix=ProLog.prefix)
 
-	@bot.check
-	async def block_dms(ctx):			# I couldn't think of a better place to put this
-		return ctx.guild is not None
-	
     for extension in EXTENSIONS:
         try:
             bot.load_extension(extension)
@@ -71,7 +73,5 @@ if __name__ == '__main__':
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()
 
-    try:
-        bot.run(config.token)
-    finally:
-        pass
+
+    bot.run(config.token)
