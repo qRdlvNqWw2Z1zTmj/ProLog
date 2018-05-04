@@ -60,6 +60,10 @@ class ProLog(commands.Bot):
 if __name__ == '__main__':
     bot = ProLog(command_prefix=ProLog.prefix)
 
+	@bot.check
+	async def block_dms(ctx):			# I couldn't think of a better place to put this
+		return ctx.guild is not None
+	
     for extension in EXTENSIONS:
         try:
             bot.load_extension(extension)
