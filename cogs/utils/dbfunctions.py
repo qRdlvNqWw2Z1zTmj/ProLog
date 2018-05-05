@@ -178,7 +178,13 @@ class ConfigClass:
         # Update the guild configs
         for c in channels:
             for m in mods:
+                print(f"Channel: {c.name} {c.id} GuildID: {c.guild.id} Module: {m}")
                 await self.togglechannel(c.guild.id, m, c.id)
+
+        # Error on no channels
+        if not channels:
+            await ctx.send("No channels specified")
+            return
 
         # Error on bad args
         if badargs:

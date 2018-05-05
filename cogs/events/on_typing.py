@@ -14,6 +14,8 @@ class Typinglog:
         if not isinstance(channel, discord.TextChannel):
             return
 
+        print("TYPING!")
+
         start = datetime.datetime.now()
         config = await self.bot.config[channel.guild.id]
 
