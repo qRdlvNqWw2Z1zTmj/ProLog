@@ -58,8 +58,8 @@ class HelpFormatter:
         command = self.bot.get_command(command)
         if command is None: return
         embed = discord.Embed(title=f'Help and usage for command `{command.name}`', color=discord.Color.dark_teal())
-        embed.add_field(name='Usage:', value=f'{self.ctx.prefix}{command.name} {command.usage}')
-        embed.add_field(name='Help:', value=command.help)
+        embed.add_field(name='Usage:', value=f'{self.ctx.prefix}{command.name} {command.usage}', inline=False)
+        embed.add_field(name='Help:', value=command.help, inline=False)
         fields = sorted(embed.fields, key=attrgetter('name'))  # Sort embed fields by name
         for index, field in enumerate(fields):
             embed.set_field_at(index, name=field.name, value=field.value, inline=field.inline)
