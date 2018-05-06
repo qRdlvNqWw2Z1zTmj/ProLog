@@ -29,23 +29,28 @@ class ProLog(commands.Bot):
         super().__init__(*args, **kwargs)
 
     async def __init(self):
-        self.db = await asyncpg.create_pool(config.postgresql)
-        self.prefixes = dbfunctions.PrefixesClass(self)
-        self.config = dbfunctions.ConfigClass(self)
-
         try:
-            self.db = await asyncpg.create_pool(config.postgresql)
+            self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql), 10)
         except Exception as e:
             print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
             return
 
+        self.prefixes = dbfunctions.PrefixesClass(self)
+        self.config = dbfunctions.ConfigClass(self)
+
 
     async def on_ready(self):
         await self.__init()
+        for extension in cogs:
+            try:
+                self.load_extension(extension)
+            except Exception as e:
+                print(f'Failed to load extension {extension}.', file=sys.stderr)
+                traceback.print_exc()
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
         print("Logged into PostgresSQL server")
-        print(f"Loaded cogs {', '.join([c for c in self.cogs])}")
+        print(f"Loaded cogs {', '.join(self.cogs)}")
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
 
@@ -56,7 +61,7 @@ class ProLog(commands.Bot):
         await self.process_commands(message)
 
 
-    async def prefix(self, message):
+    async def get_prefix(self, message):
         try:
             prefixes = await self.prefixes[message.guild.id]
         except KeyError:
@@ -69,18 +74,5 @@ class ProLog(commands.Bot):
 
 
 if __name__ == '__main__':
-    bot = ProLog(command_prefix=ProLog.prefix)
-
-    for extension in cogs:
-        try:
-            bot.load_extension(extension)
-        except Exception as e:
-            print(f'Failed to load extension {extension}.', file=sys.stderr)
-            traceback.print_exc()
-
-
+    bot = ProLog(command_prefix=None)
     bot.run(config.token)
-
-
-
-
