@@ -24,8 +24,8 @@ class PrefixesClass:
             
         return res
 
-    async def setitem(self, item: int, value): #Was gonna use __setitem__, but await PrefixesClass[something] = blah wont work, only await PrefixesClass.__setitem__
-        value = json.dumps(value) #JSON serialization
+    async def setitem(self, item: int, data): #Was gonna use __setitem__, but await PrefixesClass[something] = blah wont work, only await PrefixesClass.__setitem__
+        value = json.dumps(data) #JSON serialization
         try:
             await self.execute(f'''
             INSERT INTO Prefixes (GuildID, prefixes) VALUES ({item}, '{value}');
@@ -34,9 +34,8 @@ class PrefixesClass:
             await self.execute(f'''
             UPDATE Prefixes SET GuildID={item}, prefixes='{value}' WHERE GuildID = {item};
             ''')
-        try:
-            del self.data[str(item)] #Refreshes the cache
-        except KeyError: pass
+
+        self.data[str(item)] = data #Refreshes the cache
             
 
     async def create_con(self):
@@ -86,8 +85,8 @@ class ConfigClass:
                 return await self.__getitem__(item)
         return res
 
-    async def set(self, item: int, value): #These methods should be nearly equal to methods in PrefixesClass
-        value = json.dumps(value)
+    async def set(self, item: int, data): #These methods should be nearly equal to methods in PrefixesClass
+        value = json.dumps(data)
         try:
             await self.execute(f'''
             INSERT INTO Configs (GuildID, configs) VALUES ({item}, '{value}');
@@ -96,9 +95,8 @@ class ConfigClass:
             await self.execute(f'''
             UPDATE Configs SET GuildID={item}, configs='{value}' WHERE GuildID = {item};
             ''')
-        try:
-            del self.data[str(item)]
-        except KeyError: pass
+        
+        self.data[str(item)] = data
         
     async def togglechannel(self, GuildID: int, type: str, ChannelID: int): 
         config = await self[GuildID]
