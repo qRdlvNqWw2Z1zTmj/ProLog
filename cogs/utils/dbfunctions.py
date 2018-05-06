@@ -1,5 +1,10 @@
-import asyncpg
 import json
+
+import asyncpg
+from discord.ext import commands
+from discord.ext.commands import TextChannelConverter
+
+
 
 class PrefixesClass:
     def __init__(self, bot):
@@ -60,19 +65,19 @@ class PrefixesClass:
             await self.con.close()
             self.con = None
 
-        
-            
 
 class ConfigClass:
     def __init__(self, bot):
         self.bot = bot
         self.db = bot.db
+        self.modules = bot.modules
         self.con = None
         self.data = {} #Local cache for faster data retrieval
 
+
     async def __getitem__(self, item: int): #These methods should be nearly equal to methods in PrefixesClass
         try:
-            res = self.data[str(item)]
+            res = self.data[str(item)] # Had to comment this out because for some reason the except didn't work. Remind me to fix/sort/whatever this out
         except KeyError:
             res = await self.fetch(f'''
             SELECT configs FROM Configs WHERE GuildID = {item};
@@ -113,7 +118,6 @@ class ConfigClass:
             await self.set(GuildID, config)
             return False
 
-
     async def create_con(self):
         self.con = await self.db.acquire()
 
@@ -135,3 +139,81 @@ class ConfigClass:
         if await self.verify_con():
             await self.con.close()
             self.con = None
+
+
+
+
+
+
+
+    # This is gonna be long and broken
+    @commands.group()
+    async def log(self, ctx):
+        """The main logging command."""
+        pass
+
+    @log.command()
+    async def start(self, ctx, *args):
+        """Starts logging specified modules in specified channels.
+        It doesn't matter in what order the modules and channels are in, as long as they're correct and separated by spaces it will succeed.
+        A list of modules and module catagories can be shown with the command `log show all`."""
+        mods = []
+        channels = []
+        badargs = []
+
+        # Parse the mash of arguments
+        for m in args:
+            try:
+                channel = await TextChannelConverter().convert(ctx, m)
+                channels.append(channel)
+            except commands.errors.BadArgument:
+                if not m.casefold() in map(str.casefold, self.modules):
+                    print(f"Bad argument: {m}")
+                    badargs.append(m)
+                else:
+                    mods.append(m)
+
+        # Update the guild configs
+        for c in channels:
+            for m in mods:
+                print(f"Channel: {c.name} {c.id} GuildID: {c.guild.id} Module: {m}")
+                await self.togglechannel(c.guild.id, m, c.id)
+
+        # Error on no channels
+        if not channels:
+            await ctx.send("No channels specified")
+            return
+
+        # Error on bad args
+        if badargs:
+            await ctx.send(f"Invalid argument `{badargs[0]}`. Ignoring" if len(badargs) == 1 else
+                           f"Invalid arguments `{', '.join([b for b in badargs])}`. Ignoring" if badargs > 1 else None)
+
+        # Confirmation message
+        if mods:
+            await ctx.send(f"Started logging modules {', '.join([m for m in mods])} in {', '.join([c.mention for c in channels])}")
+
+def setup(bot):
+    bot.add_cog(ConfigClass(bot))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import traceback
 
@@ -8,8 +9,14 @@ from discord.ext import commands
 import config
 from cogs.utils import dbfunctions
 
-EXTENSIONS = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
-              "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update"]
+cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
+              "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update",
+              "cogs.utils.dbfunctions"]
+
+modules = []
+modules += ["TypingLogs-Typing"]  # Modules for on_typing.py
+modules += ["MemberLogs-Nickname", "MemberLogs-Status"]  # Modules for on_member_update.py
+
 
 
 class ProLog(commands.Bot):
@@ -17,6 +24,8 @@ class ProLog(commands.Bot):
         self.prefixes = None
         self.config = None
         self.db = None
+        self.cogs = cogs
+        self.modules = modules
         super().__init__(*args, **kwargs)
 
     async def __init(self):
@@ -24,32 +33,33 @@ class ProLog(commands.Bot):
         self.prefixes = dbfunctions.PrefixesClass(self)
         self.config = dbfunctions.ConfigClass(self)
 
+        try:
+            self.db = await asyncpg.create_pool(config.postgresql)
+        except Exception as e:
+            print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
+            return
+
+
     async def on_ready(self):
-        if self.db is None:
-            try:
-                await self.__init()
-            except TimeoutError as e:
-                print(e)
+        await self.__init()
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
-        print("Logged into PostgresSQL server" if self.db is not None else "Failed to log into PostgreSQl server")
+        print("Logged into PostgresSQL server")
         print(f"Loaded cogs {', '.join([c for c in self.cogs])}")
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
 
 
     async def on_message(self, message):
-        if not isinstance(message.channel, discord.TextChannel):
-            return
-        if message.author.bot:
+        if not isinstance(message.channel, discord.TextChannel) or message.author.bot:
             return
         await self.process_commands(message)
-        
+
+
     async def prefix(self, message):
         try:
             prefixes = await self.prefixes[message.guild.id]
         except KeyError:
-            print('keyerror')
             await self.prefixes.setitem(message.guild.id, ['!'])
             prefixes = self.prefixes[str(message.guild.id)]
         except:
@@ -57,17 +67,20 @@ class ProLog(commands.Bot):
         return commands.when_mentioned_or(*prefixes)(self, message)
 
 
+
 if __name__ == '__main__':
     bot = ProLog(command_prefix=ProLog.prefix)
 
-    for extension in EXTENSIONS:
+    for extension in cogs:
         try:
             bot.load_extension(extension)
         except Exception as e:
             print(f'Failed to load extension {extension}.', file=sys.stderr)
             traceback.print_exc()
 
-    try:
-        bot.run(config.token)
-    finally:
-        pass
+
+    bot.run(config.token)
+
+
+
+
