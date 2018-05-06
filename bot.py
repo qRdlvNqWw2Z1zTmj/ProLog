@@ -30,13 +30,15 @@ class ProLog(commands.Bot):
 
     async def __init(self):
         try:
-            self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql), 10)
+            if self.db is None: 
+                self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql), 10)
         except Exception as e:
             print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
             return
 
-        self.prefixes = dbfunctions.PrefixesClass(self)
-        self.config = dbfunctions.ConfigClass(self)
+
+        self.prefixes = dbfunctions.PrefixesClass(self) if self.prefixes is not None else self.prefixes
+        self.config = dbfunctions.ConfigClass(self) if self.config is not None else self.config
 
 
     async def on_ready(self):
