@@ -72,7 +72,7 @@ class DatabaseFunctions:
         return result
 
 
-    async def get_prefixs(self, bot, message):
+    async def get_prefixes(self, bot, message):
         return await self.get_row("configs", "prefixes", message.guild.id, "prefixes")
 
 
@@ -105,25 +105,4 @@ class DatabaseFunctions:
 
 def setup(bot):
     bot.add_cog(DatabaseFunctions(bot))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#whitespace

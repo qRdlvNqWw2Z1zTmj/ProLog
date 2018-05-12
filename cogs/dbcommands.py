@@ -10,7 +10,7 @@ class DatabaseCommands:
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def getitem(self, ctx, table, column, item, guildid: int = None):
         if guildid is None:
             guildid = ctx.guild.id
@@ -30,9 +30,10 @@ class DatabaseCommands:
 
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
-        prefixes = await dbfunctions.DatabaseFunctions(self.bot).get_prefixs(self, ctx.message)
+        prefixes = await dbfunctions.DatabaseFunctions(self.bot).get_prefixes(self, ctx.message)
         for p in prefixes:
             prefixes.append(p)
+            prefixes.sort()
         await dbfunctions.DatabaseFunctions(self.bot).set_item(ctx.guild.id, "configs", "prefixes", prefixes)
         await functions.completed(ctx.message)
 
