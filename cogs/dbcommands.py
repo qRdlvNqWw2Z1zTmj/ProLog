@@ -43,10 +43,15 @@ class DatabaseCommands:
         prefixes = await dbfunctions.DatabaseFunctions(self.bot).get_prefixes(self, ctx.message)
         errs = 0
         for p in prefix:
-            if p not in prefixes: await ctx.send(f'{p} does not exist!'); errs += 1
-            else: prefixes.remove(p)
+            if p not in prefixes: 
+                await ctx.send(f'{p} does not exist!')
+                errs += 1
+            else:
+                prefixes.remove(p)
         await dbfunctions.DatabaseFunctions(self.bot).set_item(ctx.guild.id, "configs", "prefixes", prefixes)
-        if len(prefix) == errs: return await ctx.send('No prefix was removed')
+        if len(prefix) == errs: 
+            await functions.not_completed(ctx.message)
+            return await ctx.send('No prefix was removed!')
         await functions.completed(ctx.message)
 
 
