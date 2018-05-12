@@ -8,9 +8,7 @@ class MemberUpdateLog:
 
 
     async def on_member_update(self, before, after):
-        config = await self.bot.config[after.guild.id]
-
-
+        pass
 
 
 
