@@ -20,7 +20,7 @@ modules += ["MemberLogs-Nickname", "MemberLogs-Status"]  # Modules for on_member
 
 class ProLog(commands.Bot):
     def __init__(self):
-        self._cogs = cogs #self.cogs already used in commands.Bot, and this is what caused help to be broken
+        self._cogs = cogs
         self.modules = modules
         super().__init__(command_prefix=dbfunctions.DatabaseFunctions(self).get_prefixs)
 
