@@ -73,11 +73,10 @@ class DatabaseFunctions:
 
 
     async def get_prefixs(self, bot, message):
-        prefixes = await self.get_row("configs", "prefixes", message.guild.id, "prefixes")
-        return prefixes
+        return await self.get_row("configs", "prefixes", message.guild.id, "prefixes")
 
 
-    async def get_modules(guildid: int):
+    async def get_modules(self, guildid: int):
         pass
 
 
