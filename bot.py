@@ -22,7 +22,7 @@ class ProLog(commands.Bot):
     def __init__(self):
         self._cogs = cogs #self.cogs already used in commands.Bot, and this is what caused help to be broken
         self.modules = modules
-        super().__init__(command_prefix=dbfunctions.DatabaseFunctions(self).get_prefixs)
+        super().__init__(command_prefix=dbfunctions.DatabaseFunctions(self).get_prefixes)
 
     async def __init(self):
         try:

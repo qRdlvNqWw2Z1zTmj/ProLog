@@ -31,17 +31,20 @@ class DatabaseCommands:
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
         prefixes = await dbfunctions.DatabaseFunctions(self.bot).get_prefixes(self, ctx.message)
-        for p in prefixes:
+        for p in prefix:
             prefixes.append(p)
-            prefixes.sort()
+            prefixes.sort() #Makes things nice
+        prefixes = list(set(prefixes)) #Remove dupes
         await dbfunctions.DatabaseFunctions(self.bot).set_item(ctx.guild.id, "configs", "prefixes", prefixes)
         await functions.completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
+        prefixes = await dbfunctions.DatabaseFunctions(self.bot).get_prefixes(self, ctx.message)
         for p in prefix:
-            await dbfunctions.DatabaseFunctions(self).remove_item("configs", "prefixes", ctx.guild.id, p)
-
+            if p not in prefixes: print(f'{p} not in db or whatever')
+            else: prefixes.remove(p)
+        await dbfunctions.DatabaseFunctions(self.bot).set_item(ctx.guild.id, "configs", "prefixes", prefixes)
         await functions.completed(ctx.message)
 
 
