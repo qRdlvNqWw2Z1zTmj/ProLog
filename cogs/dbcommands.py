@@ -93,5 +93,13 @@ class DatabaseCommands:
             await ctx.send(f"Started logging modules {', '.join([m for m in mods])} in {', '.join([c.mention for c in channels])}")
 
 
+    @log.group()
+    async def show(self, ctx):
+        await ctx.send('WIP')
+    
+    @show.command()
+    async def all(self, ctx):
+        await ctx.send('WIP')
+
 def setup(bot):
     bot.add_cog(DatabaseCommands(bot))
