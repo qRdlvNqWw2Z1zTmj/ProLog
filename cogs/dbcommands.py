@@ -55,62 +55,64 @@ class DatabaseCommands:
         await functions.completed(ctx.message)
 
 
+        @commands.group(aliases=["logging", "logs"])
+        async def log(self, ctx):
+            """The main logging command.
+            See the available subcommands and their help pages for more details."""
+            if ctx.invoked_subcommand is None:
+                await ctx.send("Please provide a valid option. For usage see the help page")
 
-    @commands.group()
-    async def log(self, ctx):
-        """The main logging command."""
-        if ctx.invoked_subcommand is None:
-            await ctx.send("Please provide a valid option")
+        @log.command()
+        async def start(self, ctx, *args):
+            """Starts lmodule logging in specified channels.
+            It doesn't matter in what order the modules and channels are in, as long as they're correct and separated by spaces it will succeed.
+            A list of modules and module catagories can be shown with ."""
+            modules = []
+            channels = []
+            badargs = []
 
-    @log.command()
-    async def start(self, ctx, *args):
-        """Starts logging specified modules in specified channels.
-        It doesn't matter in what order the modules and channels are in, as long as they're correct and separated by spaces it will succeed.
-        A list of modules and module catagories can be shown with the command `log show all`."""
-        mods = []
-        channels = []
-        badargs = []
+            # Parse the mash of arguments
+            for m in args:
+                try:
+                    channel = await TextChannelConverter().convert(ctx, m)
+                    channels.append(channel)
+                except commands.errors.BadArgument:
+                    if not m.casefold() in map(str.casefold, self.bot.modules):
+                        badargs.append(m)
+                    else:
+                        modules.append(m)
 
-        # Parse the mash of arguments
-        for m in args:
-            try:
-                channel = await TextChannelConverter().convert(ctx, m)
-                channels.append(channel)
-            except commands.errors.BadArgument:
-                if not m.casefold() in map(str.casefold, self.bot.modules):
-                    print(f"Bad argument: {m}")
-                    badargs.append(m)
-                else:
-                    mods.append(m)
+            # Update the guild configs
+            for c in channels:
+                for m in modules:
+                    print(f"Channel: {c.name} {c.id} GuildID: {c.guild.id} Module: {m}")
+                    await self.togglechannel(c.guild.id, m, c.id)
 
-        # Update the guild configs
-        for c in channels:
-            for m in mods:
-                print(f"Channel: {c.name} {c.id} GuildID: {c.guild.id} Module: {m}")
-                await self.togglechannel(c.guild.id, m, c.id)
+            # Error on no channels
+            if not channels:
+                await ctx.send("No channels specified")
+                return
 
-        # Error on no channels
-        if not channels:
-            await ctx.send("No channels specified")
-            return
+            # Error on bad args
+            if badargs:
+                await ctx.send(f"Invalid argument `{badargs[0]}`. Ignoring" if len(badargs) == 1 else
+                               f"Invalid arguments `{', '.join([b for b in badargs])}`. Ignoring" if badargs > 1 else None)
 
-        # Error on bad args
-        if badargs:
-            await ctx.send(f"Invalid argument `{badargs[0]}`. Ignoring" if len(badargs) == 1 else
-                           f"Invalid arguments `{', '.join([b for b in badargs])}`. Ignoring" if badargs > 1 else None)
+            # Confirmation message
+            if modules:
+                await ctx.send(
+                    f"Started logging modules {', '.join([m for m in modules])} in {', '.join([c.mention for c in channels])}")
 
-        # Confirmation message
-        if mods:
-            await ctx.send(f"Started logging modules {', '.join([m for m in mods])} in {', '.join([c.mention for c in channels])}")
+        @log.group()
+        async def show(self, ctx):
+            await ctx.send('WIP')
 
+        @show.command()
+        async def all(self, ctx):
+            await ctx.send('WIP')
 
-    @log.group()
-    async def show(self, ctx):
-        await ctx.send('WIP')
-    
-    @show.command()
-    async def all(self, ctx):
-        await ctx.send('WIP')
+    def setup(bot):
+        bot.add_cog(DatabaseCommands(bot))
 
 def setup(bot):
     bot.add_cog(DatabaseCommands(bot))
