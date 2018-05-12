@@ -11,13 +11,8 @@ class Typinglog:
 
 
     async def on_typing(self, channel, member, when):
-        if not isinstance(channel, discord.TextChannel):
-            return
+       pass
 
-        print("TYPING!")
-
-        start = datetime.datetime.now()
-        config = await self.bot.config[channel.guild.id]
 
 
 

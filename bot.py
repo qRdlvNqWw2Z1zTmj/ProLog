@@ -1,4 +1,5 @@
 import asyncio
+import json
 import sys
 import traceback
 
@@ -9,9 +10,7 @@ from discord.ext import commands
 import config
 from cogs.utils import dbfunctions
 
-cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
-              "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update",
-              "cogs.utils.dbfunctions"]
+cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler", "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update", "cogs.utils.dbfunctions", "cogs.dbcommands"]
 
 modules = []
 modules += ["TypingLogs-Typing"]  # Modules for on_typing.py
@@ -20,16 +19,14 @@ modules += ["MemberLogs-Nickname", "MemberLogs-Status"]  # Modules for on_member
 
 
 class ProLog(commands.Bot):
-    def __init__(self, *args, **kwargs):
-        self.prefixes = None
-        self.config = None
-        self.db = None
+    def __init__(self):
         self.cogs = cogs
         self.modules = modules
-        super().__init__(*args, **kwargs)
+        super().__init__(command_prefix=dbfunctions.DatabaseFunctions(self).get_prefixs)
 
     async def __init(self):
         try:
+<<<<<<< HEAD
             if self.db is None: 
                 self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql), 10)
         except Exception as e:
@@ -40,6 +37,21 @@ class ProLog(commands.Bot):
         self.prefixes = dbfunctions.PrefixesClass(self) if self.prefixes is not None else self.prefixes
         self.config = dbfunctions.ConfigClass(self) if self.config is not None else self.config
 
+=======
+            self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql), 10)
+            conn = conn = await asyncpg.connect(config.postgresql)
+            await conn.set_type_codec(
+                'jsonb',
+                encoder=json.dumps,
+                decoder=json.loads,
+                schema='pg_catalog')
+        except Exception as e:
+            print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
+            print(e)
+            quit()
+        finally:
+            await conn.close()
+>>>>>>> d9ddc2042a661a9de2e8990a3d5194b9a4461f52
 
     async def on_ready(self):
         await self.__init()
@@ -56,25 +68,12 @@ class ProLog(commands.Bot):
         print(f'Guild count: {len(self.guilds)}')
         print('=' * 10)
 
-
     async def on_message(self, message):
         if not isinstance(message.channel, discord.TextChannel) or message.author.bot:
             return
         await self.process_commands(message)
 
 
-    async def get_prefix(self, message):
-        try:
-            prefixes = await self.prefixes[message.guild.id]
-        except KeyError:
-            await self.prefixes.setitem(message.guild.id, ['!'])
-            prefixes = self.prefixes[str(message.guild.id)]
-        except:
-            return commands.when_mentioned(self, message)
-        return commands.when_mentioned_or(*prefixes)(self, message)
-
-
-
 if __name__ == '__main__':
-    bot = ProLog(command_prefix=None)
+    bot = ProLog()
     bot.run(config.token)
