@@ -100,8 +100,8 @@ class DatabaseCommands:
 
             # Confirmation message
             if modules:
-                await ctx.send(
-                    f"Started logging modules {', '.join([m for m in modules])} in {', '.join([c.mention for c in channels])}")
+                await ctx.send(f"Started logging modules "
+                               f"{', '.join([m for m in modules])} in {', '.join([c.mention for c in channels])}")
 
         @log.group()
         async def show(self, ctx):
