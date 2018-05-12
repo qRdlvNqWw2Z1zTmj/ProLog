@@ -111,8 +111,6 @@ class DatabaseCommands:
         async def all(self, ctx):
             await ctx.send('WIP')
 
-    def setup(bot):
-        bot.add_cog(DatabaseCommands(bot))
 
 def setup(bot):
     bot.add_cog(DatabaseCommands(bot))
