@@ -52,6 +52,7 @@
 class DatabaseFunctions:
     def __init__(self, bot):
         self.bot = bot
+        self.prefix_cache = {} 
 
 
     async def get_row(self, dbtable, dbcolumn, guildid: int, key=None):
@@ -73,13 +74,18 @@ class DatabaseFunctions:
 
 
     async def get_prefixes(self, bot, message):
-        return await self.get_row("configs", "prefixes", message.guild.id, "prefixes")
-
+        try:
+            return self.prefix_cache[str(message.guild.id)]
+        except KeyError
+            self.prefix_cache[str(message.guild.id)] = await self.get_row("configs", "prefixes", message.guild.id, "prefixes")
+            return await self.get_prefixea(bot, message)
 
     async def get_modules(self, guildid: int):
         pass
 
-
+    async def set_prefix(self, guildid: int, value):
+        pass
+    
     async def set_item(self, guildid: int, dbtable, dbcolumn, value):
         async with self.bot.db.acquire() as connection:
             async with connection.transaction():
