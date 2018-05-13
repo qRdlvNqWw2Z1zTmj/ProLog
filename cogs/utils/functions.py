@@ -5,8 +5,6 @@ async def not_completed(message):
     await message.add_reaction("negative:444926170895613962")
 
 def escape(cont):
-    cont = cont.replace('*', '\*')
-    cont = cont.replace('__', '\_\_')
-    cont = cont.replace('`', '\`')
-    cont = cont.replace('~~', '\~\~')
+    for c in cont:
+        cont.replace(c, f'\{c}')
     return cont
