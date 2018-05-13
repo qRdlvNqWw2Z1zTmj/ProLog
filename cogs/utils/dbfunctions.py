@@ -1,4 +1,3 @@
-from functools import lru_cache
 
 class DatabaseFunctions:
     def __init__(self, bot):
@@ -20,7 +19,6 @@ class DatabaseFunctions:
             result = result[key]
         return result
 
-    @lru_cache(typed=True)
     async def get_prefixes(self, bot, message):
         await self.get_row( message.guild.id, "configs", "prefixes", "prefixes")
         
