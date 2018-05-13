@@ -53,8 +53,6 @@ class DatabaseFunctions:
     def __init__(self, bot):
         self.bot = bot
 
-
-
     async def get_row(self, dbtable, dbcolumn, guildid: int, key=None):
         # MAKE FULLY SURE NONE OF THESE ARE USER INPUTTED. Constructing queries without the $n format leads to SQLI
         result = await self.bot.db.fetchrow(f"""
@@ -74,18 +72,14 @@ class DatabaseFunctions:
 
     @lru_cache(typed=True)
     async def get_prefixes(self, bot, message):
-
-
-
         await self.get_row("configs", "prefixes", message.guild.id, "prefixes")
-
-
-    async def get_modules(self, guildid: int):
-        pass
-
+        
     async def set_prefix(self, guildid: int, value):
         self.get_prefixes.clear_cache()
         await self.set_item(guildid, "configs", "prefixes", value)
+        
+    async def get_modules(self, guildid: int):
+        pass
     
     async def set_item(self, guildid: int, dbtable, dbcolumn, value):
         async with self.bot.db.acquire() as connection:
