@@ -9,12 +9,13 @@ from .utils import functions
 class DatabaseCommands:
     def __init__(self, bot):
         self.bot = bot
+        self.dbfuncs = dbfunctions.DatabaseFunctions(bot)
 
     @commands.command(hidden=True)
     async def getitem(self, ctx, table, column, item, guildid: int = None):
         if guildid is None:
             guildid = ctx.guild.id
-        await ctx.send(await dbfunctions.DatabaseFunctions(self).get_row(guildid, table, column, item, ))
+        await ctx.send(await self.dbfuncs.get_row(guildid, table, column, item, ))
 
 
     @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
@@ -22,6 +23,12 @@ class DatabaseCommands:
         if ctx.invoked_subcommand is not None:
             return
         prefixes = await self.bot.get_prefix(ctx.message)
+        try:
+            prefixes.remove(f'<@{self.bot.user.id}> ')
+        except ValueError: pass
+        try:
+            prefixes.remove(f'<@!{self.bot.user.id}> ')
+        except ValueError: pass
         stuff = '`\n`'.join(prefixes)
         desc = f'`{stuff}`'
         embed = discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description=desc,
@@ -30,17 +37,17 @@ class DatabaseCommands:
 
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
-        prefixes = await dbfunctions.DatabaseFunctions(self.bot).get_prefixes(self, ctx.message)
+        prefixes = await self.dbfuncs.get_prefixes(self.bot, ctx.message)
         for p in prefix:
             prefixes.append(p)
             prefixes.sort() #Makes things nice
         prefixes = list(set(prefixes)) #Remove dupes
-        await dbfunctions.DatabaseFunctions(self.bot).set_prefix(ctx.guild.id, prefixes)
+        await self.dbfuncs.set_prefix(ctx.guild.id, prefixes)
         await functions.completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
-        prefixes = await dbfunctions.DatabaseFunctions(self.bot).get_prefixes(self, ctx.message)
+        prefixes = await self.dbfuncs.get_prefixes(self.bot, ctx.message)
         errs = 0
         for p in prefix:
             if p not in prefixes: 
@@ -48,7 +55,7 @@ class DatabaseCommands:
                 errs += 1
             else:
                 prefixes.remove(p)
-        await dbfunctions.DatabaseFunctions(self.bot).set_prefix(ctx.guild.id, prefixes)
+        await self.dbfuncs.set_prefix(ctx.guild.id, prefixes)
         if len(prefix) == errs: 
             await functions.not_completed(ctx.message)
             return await ctx.send('No prefix was removed!')

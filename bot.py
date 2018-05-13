@@ -22,7 +22,10 @@ class ProLog(commands.Bot):
     def __init__(self):
         self._cogs = cogs
         self.modules = modules
-        super().__init__(command_prefix=dbfunctions.DatabaseFunctions(self).get_prefixes)
+        async def prefix(bot, message):
+            prefixes = await dbfunctions.DatabaseFunctions(self).get_prefixes(bot, message)
+            return commands.when_mentioned_or(*prefixes)(bot, message)
+        super().__init__(command_prefix=prefix)
 
     async def __init(self):
         try:
