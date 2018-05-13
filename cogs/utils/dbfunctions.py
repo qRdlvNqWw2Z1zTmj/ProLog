@@ -47,7 +47,7 @@
 #
 # # exiting the acquire block releases the connection back to the pool
 
-from functions import lru_cache
+from functools import lru_cache
 
 class DatabaseFunctions:
     def __init__(self, bot):
