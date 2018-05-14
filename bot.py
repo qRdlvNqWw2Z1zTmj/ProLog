@@ -10,7 +10,7 @@ from discord.ext import commands
 import config
 from cogs.utils import dbfunctions
 
-cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler", "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update", "cogs.utils.dbfunctions", "cogs.dbcommands"]
+cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler", "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update", "cogs.utils.dbfunctions", "cogs.dbcommands", "cogs.utils.dbfunctions"]
 
 modules = []
 modules += ["TypingLogs-Typing"]  # Modules for on_typing.py
@@ -22,8 +22,17 @@ class ProLog(commands.Bot):
     def __init__(self):
         self._cogs = cogs
         self.modules = modules
+        self._something = None
         async def prefix(bot, message):
-            prefixes = await dbfunctions.DatabaseFunctions(self).get_prefixes(bot, message)
+            if self._something is None:
+                print(self.cogs)
+                self._something = self.get_cog('DatabaseFunctions')
+                try:
+                    return await prefix(bot, message) #Recursion!
+                except RecursionError:
+                    print('Prefix stuff broken')
+                    exit()
+            prefixes = await self._something.get_prefixes(bot, message)
             return commands.when_mentioned_or(*prefixes)(bot, message)
         super().__init__(command_prefix=prefix)
 

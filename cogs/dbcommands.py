@@ -42,7 +42,7 @@ class DatabaseCommands:
             prefixes.append(p)
             prefixes.sort() #Makes things nice
         prefixes = list(set(prefixes)) #Remove dupes
-        await self.dbfuncs.set_prefix(ctx.guild.id, prefixes)
+        await self.dbfuncs.set_prefix(ctx.message, prefixes)
         await functions.completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
@@ -55,7 +55,7 @@ class DatabaseCommands:
                 errs += 1
             else:
                 prefixes.remove(p)
-        await self.dbfuncs.set_prefix(ctx.guild.id, prefixes)
+        await self.dbfuncs.set_prefix(ctx.message, prefixes)
         if len(prefix) == errs: 
             await functions.not_completed(ctx.message)
             return await ctx.send('No prefix was removed!')

@@ -1,9 +1,8 @@
-from .cache import LFUCache as lfucache
+from .cache import cached_function
 
 class DatabaseFunctions:
     def __init__(self, bot):
         self.bot = bot
-        self.cache = lfucache(limit = 10) #Icrease this when we go big
 
     async def get_row(self,  guildid: int, dbtable, dbcolumn, key=None):
         result = await self.bot.db.fetchrow(f"""
@@ -21,17 +20,14 @@ class DatabaseFunctions:
             result = result[key]
         return result
 
+    @cached_function()
     async def get_prefixes(self, bot, message):
-        try:
-            return self.cache[message]
-        except KeyError:
-            res = await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
-            self.cache[message] = res
-            return await self.get_prefixes(bot, message)
-        
-    async def set_prefix(self, guildid: int, value):
-        self.cache[guildid] = value
-        await self.set_item(guildid, "configs", "prefixes", value)
+        return await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
+    
+
+    async def set_prefix(self, message, value):
+        self.get_prefixes.invalidate(self.get_prefixes.get_id(self.bot, message))
+        await self.set_item(message.guild.id, "configs", "prefixes", value)
         
     async def get_modules(self, guildid: int):
         pass
