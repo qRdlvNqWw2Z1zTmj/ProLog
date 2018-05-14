@@ -1,3 +1,6 @@
+import asyncio
+from functools import wraps
+
 class LFUNode:
 
     __slots__ = ('key', 'value', 'freqnode', 'previous', 'next')
@@ -207,3 +210,52 @@ class LFUCache(object):
             self.freq_link_head = new_freq_node
         else:
             self.freq_link_head.append_cache_to_tail(cache_node)
+
+class CachedFunction:
+    def __init__(self, func, limit=1000):
+        self.limit = limit
+        self.cache = LFUCache(limit=self.limit)
+        self.func = func
+
+    def __call__(self, *args, **kwargs):
+            id = hash(str(args)+str(kwargs))
+            try:
+                return self.cache[id]
+            except KeyError:
+                res = self.func(*args, **kwargs)
+                self.cache[id] = res
+                return res
+
+    def get_id(self, *args, **kwargs): 
+        return hash(str(args)+str(kwargs))
+
+    def invalidate(self, id):
+        del self.cache[id]
+
+    def invalidate_cache(self):
+        self.cache = LFUCache(limit=self.limit)
+
+class AsyncCachedFunction(CachedFunction):
+    async def __call__(self, *args, **kwargs):
+        id = hash(str(args)+str(kwargs))
+        try:
+            return self.cache[id]
+        except KeyError:
+            res = await self.func(*args, **kwargs)
+            self.cache[id] = res
+            return res
+
+def cached_function(limit: int=1000):
+    def dec(fn):
+        coro = False
+        if asyncio.iscoroutinefunction(fn):
+            coro = True
+            async def wrapper(*args, **kwargs):
+                return await fn()
+        else:
+            def wrapper(*args, **kwargs):
+                return fn()
+        wrapper = AsyncCachedFunction(wrapper, limit=limit) if coro else CachedFunction(wrapper, limit=limit)
+        return wrapper
+    
+    return dec
