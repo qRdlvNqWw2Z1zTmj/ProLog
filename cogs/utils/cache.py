@@ -247,15 +247,7 @@ class AsyncCachedFunction(CachedFunction):
 
 def cached_function(limit: int=1000):
     def dec(fn):
-        coro = False
-        if asyncio.iscoroutinefunction(fn):
-            coro = True
-            async def wrapper(*args, **kwargs):
-                return await fn()
-        else:
-            def wrapper(*args, **kwargs):
-                return fn()
-        wrapper = AsyncCachedFunction(wrapper, limit=limit) if coro else CachedFunction(wrapper, limit=limit)
+        if asyncio.iscoroutinefunction(fn): wrapper = AsyncCachedFunction(fn, limit=limit)
+        else: wrapper = CachedFunction(fn, limit=limit)
         return wrapper
-    
     return dec
