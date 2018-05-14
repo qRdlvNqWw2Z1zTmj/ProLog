@@ -22,17 +22,16 @@ class ProLog(commands.Bot):
     def __init__(self):
         self._cogs = cogs
         self.modules = modules
-        self._something = None
+        self._prefix_cog = None
         async def prefix(bot, message):
-            if self._something is None:
-                print(self.cogs)
-                self._something = self.get_cog('DatabaseFunctions')
+            if self._prefix_cog is None:
+                self._prefix_cog = self.get_cog('DatabaseFunctions')
                 try:
                     return await prefix(bot, message) #Recursion!
                 except RecursionError:
                     print('Prefix stuff broken')
                     exit()
-            prefixes = await self._something.get_prefixes(bot, message)
+            prefixes = await self._prefix_cog.get_prefixes(bot, message)
             return commands.when_mentioned_or(*prefixes)(bot, message)
         super().__init__(command_prefix=prefix)
 

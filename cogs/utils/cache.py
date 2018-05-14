@@ -1,4 +1,5 @@
 import asyncio
+import inspect
 from functools import wraps
 
 class LFUNode:
@@ -230,7 +231,9 @@ class CachedFunction:
         return hash(str(args)+str(kwargs))
 
     def invalidate(self, id):
-        del self.cache[id]
+        try:
+            del self.cache[id]
+        except KeyError: pass
 
     def invalidate_cache(self):
         self.cache = LFUCache(limit=self.limit)
@@ -247,7 +250,17 @@ class AsyncCachedFunction(CachedFunction):
 
 def cached_function(limit: int=1000):
     def dec(fn):
-        if asyncio.iscoroutinefunction(fn): wrapper = AsyncCachedFunction(fn, limit=limit)
-        else: wrapper = CachedFunction(fn, limit=limit)
+        if asyncio.iscoroutinefunction(fn): 
+            newfn = AsyncCachedFunction(fn, limit=limit)
+            @wraps(fn)
+            async def wrapper(*args, **kwargs):
+                return await newfn(*args, **kwargs)
+        else: 
+            newfn = CachedFunction(fn, limit=limit)
+            def wrapper(*args, **kwargs):
+                return newfn(*args, **kwargs)
+        wrapper.get_id = newfn.get_id
+        wrapper.invalidate = newfn.invalidate
+        wrapper.invalidate_cache = newfn.invalidate_cache
         return wrapper
     return dec
