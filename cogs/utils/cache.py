@@ -251,24 +251,16 @@ class AsyncCachedFunction(CachedFunction):
 def cached_function(limit: int=1000):
     def dec(fn):
         if asyncio.iscoroutinefunction(fn): 
-            class Wrap(AsyncCachedFuncion):
-                @wraps(fn)
-                async def __call__(self, *args, **kwargs):
-                    await super().__call__(*args, **kwargs) 
-            
-
-
-
-
+            newfn = AsyncCachedFunction(fn, limit=limit)
+            @wraps(fn)
+            async def wrapper(*args, **kwargs):
+                return await newfn(*args, **kwargs)
         else: 
-
-            class Wrap(CachedFuncion):
-                @wraps(fn)
-                def __call__(self, *args, **kwargs):
-                    super().__call__(*args, **kwargs) 
-
-
-
-
-        return Wrap(fn, limit=limit) 
+            newfn = CachedFunction(fn, limit=limit)
+            def wrapper(*args, **kwargs):
+                return newfn(*args, **kwargs)
+        wrapper.get_id = newfn.get_id
+        wrapper.invalidate = newfn.invalidate
+        wrapper.invalidate_cache = newfn.invalidate_cache
+        return wrapper
     return dec
