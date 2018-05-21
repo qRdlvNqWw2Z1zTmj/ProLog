@@ -219,7 +219,7 @@ class CachedFunction:
         self.func = func
 
     def __call__(self, *args, **kwargs):
-            id = hash(str(args)+str(kwargs))
+            id = self.get_id(*args, **kwargs) 
             try:
                 return self.cache[id]
             except KeyError:
@@ -228,7 +228,8 @@ class CachedFunction:
                 return res
 
     def get_id(self, *args, **kwargs): 
-        return hash(str(args)+str(kwargs))
+        args.append(kwargs)
+        return hash(args) 
 
     def invalidate(self, id):
         try:
@@ -240,7 +241,7 @@ class CachedFunction:
 
 class AsyncCachedFunction(CachedFunction):
     async def __call__(self, *args, **kwargs):
-        id = hash(str(args)+str(kwargs))
+        id = self.get_id(*args, **kwargs) 
         try:
             return self.cache[id]
         except KeyError:
@@ -259,8 +260,12 @@ def cached_function(limit: int=1000):
             newfn = CachedFunction(fn, limit=limit)
             def wrapper(*args, **kwargs):
                 return newfn(*args, **kwargs)
-        wrapper.get_id = newfn.get_id
-        wrapper.invalidate = newfn.invalidate
-        wrapper.invalidate_cache = newfn.invalidate_cache
+        
+        for a in dir(newfn):
+            try:
+                setattr(wrapper, a, getattr(newfn, a)) 
+            except:
+                pass
+
         return wrapper
     return dec
