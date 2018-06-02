@@ -10,6 +10,7 @@ class DatabaseCommands:
     def __init__(self, bot):
         self.bot = bot
         self.dbfuncs = dbfunctions.DatabaseFunctions(bot)
+        print("Loaded")
 
     @commands.command(hidden=True)
     async def getitem(self, ctx, table, column, item, guildid: int = None):
@@ -62,6 +63,8 @@ class DatabaseCommands:
         await functions.completed(ctx.message)
 
 
+
+
         @commands.group(aliases=["logging", "logs"])
         async def log(self, ctx):
             """The main logging command.
@@ -74,11 +77,13 @@ class DatabaseCommands:
             """Starts lmodule logging in specified channels.
             It doesn't matter in what order the modules and channels are in, as long as they're correct and separated by spaces it will succeed.
             A list of modules and module catagories can be shown with ."""
+            print("Test")
             modules = []
             channels = []
             badargs = []
+            dict = {}
 
-            # Parse the mash of arguments
+            # Parse args
             for m in args:
                 try:
                     channel = await TextChannelConverter().convert(ctx, m)
@@ -88,23 +93,26 @@ class DatabaseCommands:
                         badargs.append(m)
                     else:
                         modules.append(m)
-
-            # Update the guild configs
-            for c in channels:
-                for m in modules:
-                    print(f"Channel: {c.name} {c.id} GuildID: {c.guild.id} Module: {m}")
-                    await self.togglechannel(c.guild.id, m, c.id)
-
             # Error on no channels
             if not channels:
                 await ctx.send("No channels specified")
                 return
 
-            # Error on bad args
+
+            for m in modules:
+                dict[m] = [c for c in channels]
+
+            await ctx.send(f"Dict that would be JSON'd then uploaded: {dict}")
+
+
+
+
+
+
+            # Say on bad args
             if badargs:
                 await ctx.send(f"Invalid argument `{badargs[0]}`. Ignoring" if len(badargs) == 1 else
                                f"Invalid arguments `{', '.join([b for b in badargs])}`. Ignoring" if badargs > 1 else None)
-
             # Confirmation message
             if modules:
                 await ctx.send(f"Started logging modules "
