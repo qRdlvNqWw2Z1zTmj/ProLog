@@ -227,9 +227,8 @@ class CachedFunction:
                 self.cache[id] = res
                 return res
 
-    def get_id(self, *args, **kwargs): 
-        args.append(kwargs)
-        return hash(args) 
+    def get_id(self, *args, **kwargs):
+        return hash((frozenset(args), frozenset(kwargs.items())))
 
     def invalidate(self, id):
         try:
