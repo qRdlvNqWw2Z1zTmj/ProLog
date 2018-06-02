@@ -8,9 +8,10 @@ import discord
 from discord.ext import commands
 
 import config
-from cogs.utils import dbfunctions
 
-cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler", "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update", "cogs.utils.dbfunctions", "cogs.dbcommands", "cogs.utils.dbfunctions"]
+cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
+        "cogs.guildevents", "cogs.events.on_typing", "cogs.events.on_member_update",
+        "cogs.utils.dbfunctions", "cogs.dbcommands", "cogs.utils.dbfunctions"]
 
 modules = []
 modules += ["TypingLogs-Typing"]  # Modules for on_typing.py
@@ -27,7 +28,7 @@ class ProLog(commands.Bot):
             if self._prefix_cog is None:
                 self._prefix_cog = self.get_cog('DatabaseFunctions')
                 try:
-                    return await prefix(bot, message) #Recursion!
+                    return await prefix(bot, message)
                 except RecursionError:
                     print('Prefix stuff broken')
                     exit()
@@ -45,8 +46,8 @@ class ProLog(commands.Bot):
                 decoder=json.loads,
                 schema='pg_catalog')
         except Exception as e:
-            print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
             print(e)
+            print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
             quit()
         finally:
             await conn.close()
