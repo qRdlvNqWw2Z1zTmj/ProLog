@@ -34,10 +34,6 @@ class DatabaseFunctions:
         await self.set_item(message.guild.id, "configs", "prefixes", value)
 
 
-    async def get_modules(self, guildid: int):
-        pass
-
-
     async def set_item(self, guildid: int, dbtable, dbcolumn, value):
         async with self.bot.db.acquire() as connection:
             async with connection.transaction():

@@ -77,15 +77,20 @@ class DatabaseCommands:
         dict = {}
 
         # Parse args
-        for m in args:
+        for a in args:
             try:
-                channel = await TextChannelConverter().convert(ctx, m)
+                channel = await TextChannelConverter().convert(ctx, a)
                 channels.append(channel)
             except commands.errors.BadArgument:
-                if not m.casefold() in map(str.casefold, self.bot.modules):
-                    badargs.append(m)
+                if not a.casefold() in map(str.casefold, self.bot.modules):
+                    badargs.append(a)
                 else:
-                    modules.append(m)
+                    # Fix random cases
+                    for m in self.bot.modules:
+                        if a.lower() == m.lower():
+                            a = m
+                    modules.append(a)
+
         # Error on no channels
         if not channels:
             await ctx.send("Please provide a channel mention, name or id")
