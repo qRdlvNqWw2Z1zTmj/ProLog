@@ -18,12 +18,12 @@ modules += ["TypingLogs-Typing"]  # Modules for on_typing.py
 modules += ["MemberLogs-Nickname", "MemberLogs-Status"]  # Modules for on_member_update.py
 
 
-
 class ProLog(commands.Bot):
     def __init__(self):
         self._cogs = cogs
         self.modules = modules
         self._prefix_cog = None
+
         async def prefix(bot, message):
             if self._prefix_cog is None:
                 self._prefix_cog = self.get_cog('DatabaseFunctions')
@@ -34,6 +34,7 @@ class ProLog(commands.Bot):
                     exit()
             prefixes = await self._prefix_cog.get_prefixes(bot, message)
             return commands.when_mentioned_or(*prefixes)(bot, message)
+
         super().__init__(command_prefix=prefix)
 
     async def __init(self):
@@ -42,7 +43,6 @@ class ProLog(commands.Bot):
                 await conn.set_type_codec('jsonb', encoder=json.dumps, decoder=json.loads, schema='pg_catalog')
             self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql, init=init_connection), 10)
             conn = await asyncpg.connect(config.postgresql)
-
         except Exception as e:
             print(e)
             print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)

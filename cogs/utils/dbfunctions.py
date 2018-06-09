@@ -20,7 +20,12 @@ class DatabaseFunctions:
                       VALUES ($1, $2)
                   """, guildid, ["!"])
         if key is not None:
-            result = result[key]
+            try:
+                result = result[key]
+            except TypeError:
+                if dbcolumn == "prefixes" and result is None:
+                    return "!"
+                return None
         return result
 
 

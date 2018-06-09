@@ -8,7 +8,7 @@ class MemberUpdateLog:
         self.dbfuncs = dbfunctions.DatabaseFunctions(bot)
 
     async def on_member_update(self, before, after):
-
+        pass
 
 
 
