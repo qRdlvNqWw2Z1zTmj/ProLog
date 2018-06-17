@@ -1,5 +1,4 @@
 import asyncio
-import inspect
 from functools import wraps
 
 class LFUNode:
@@ -212,11 +211,51 @@ class LFUCache(object):
         else:
             self.freq_link_head.append_cache_to_tail(cache_node)
 
+class _HashedSeq(list):
+    """ This class guarantees that hash() will be called no more than once
+        per element.  This is important because the lru_cache() will hash
+        the key multiple times on a cache miss.
+    """
 
+    __slots__ = 'hashvalue'
 
-def async_cached_function(limit: int=1000):
-    class CachedFunction:
-        def __init__(self, func):
+    def __init__(self, tup, hash=hash):
+        self[:] = tup
+        self.hashvalue = hash(tup)
+
+    def __hash__(self):
+        return self.hashvalue
+
+def _make_key(args, kwds, typed,
+             kwd_mark = (object(),),
+             fasttypes = {int, str, frozenset, type(None)},
+             tuple=tuple, type=type, len=len):
+    """Make a cache key from optionally typed positional and keyword arguments
+    The key is constructed in a way that is flat as possible rather than
+    as a nested structure that would take more memory.
+    If there is only a single argument and its data type is known to cache
+    its hash value, then that argument is returned without a wrapper.  This
+    saves space and improves lookup speed.
+    """
+    # All of code below relies on kwds preserving the order input by the user.
+    # Formerly, we sorted() the kwds before looping.  The new way is *much*
+    # faster; however, it means that f(x=1, y=2) will now be treated as a
+    # distinct call from f(y=2, x=1) which will be cached separately.
+    key = args
+    if kwds:
+        key += kwd_mark
+        for item in kwds.items():
+            key += item
+    if typed:
+        key += tuple(type(v) for v in args)
+        if kwds:
+            key += tuple(type(v) for v in kwds.values())
+    elif len(key) == 1 and type(key[0]) in fasttypes:
+        return key[0]
+    return _HashedSeq(key)
+
+class CachedFunction:
+        def __init__(self, func, limit: int=100):
             self.limit = limit
             self.cache = LFUCache(limit=self.limit)
             self.func = func
@@ -230,9 +269,9 @@ def async_cached_function(limit: int=1000):
                     self.cache[id] = res
                     return res
 
-        def get_id(self, *args, **kwargs): 
-            args.append(kwargs)
-            return hash(args) 
+        @staticmethod
+        def get_id(*args, **kwargs): 
+            _make_key(args, kwargs, True)
 
         def invalidate(self, id):
             try:
@@ -242,7 +281,7 @@ def async_cached_function(limit: int=1000):
         def invalidate_cache(self):
             self.cache = LFUCache(limit=self.limit)
 
-    class AsyncCachedFunction(CachedFunction):
+class AsyncCachedFunction(CachedFunction):
         async def __call__(self, *args, **kwargs):
             id = self.get_id(*args, **kwargs) 
             try:
@@ -252,32 +291,23 @@ def async_cached_function(limit: int=1000):
                 self.cache[id] = res
                 return res
 
-    return AsyncCachedFunction
-
 def cached_function(limit: int=1000):
-    class CachedFunction:
-        def __init__(self, func):
-            self.limit = limit
-            self.cache = LFUCache(limit=self.limit)
-            self.func = func
-
-        def __call__(self, *args, **kwargs):
-                id = self.get_id(*args, **kwargs) 
-                try:
-                    return self.cache[id]
-                except KeyError:
-                    res = self.func(*args, **kwargs)
-                    self.cache[id] = res
-                    return res
-
-        def get_id(self, *args, **kwargs): 
-            args.append(kwargs)
-            return hash(args) 
-
-        def invalidate(self, id):
+    def dec(fn):
+        if asyncio.iscoroutinefunction(fn): 
+            newfn = AsyncCachedFunction(fn, limit=limit)
+            @wraps(fn)
+            async def wrapper(*args, **kwargs):
+                return await newfn(*args, **kwargs)
+        else: 
+            newfn = CachedFunction(fn, limit=limit)
+            def wrapper(*args, **kwargs):
+                return newfn(*args, **kwargs)
+        
+        for a in dir(newfn):
             try:
-                del self.cache[id]
-            except KeyError: pass
+                setattr(wrapper, a, getattr(newfn, a)) 
+            except:
+                pass
 
-        def invalidate_cache(self):
-            self.cache = LFUCache(limit=self.limit)
+        return wrapper
+    return dec

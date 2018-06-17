@@ -1,5 +1,5 @@
 import json
-from .cache import cached_function, async_cached_function
+from .cache import cached_function
 
 
 class DatabaseFunctions:
@@ -27,7 +27,7 @@ class DatabaseFunctions:
                 return None
         return result
 
-    @async_cached_function()
+    @cached_function()
     async def get_prefixes(self, bot, message):
         return await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
 
