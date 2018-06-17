@@ -38,19 +38,19 @@ class ProLog(commands.Bot):
     async def __init(self):
         try:
             self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql), 10)
-            conn = conn = await asyncpg.connect(config.postgresql)
+            conn =  await asyncpg.connect(config.postgresql)
             await conn.set_type_codec(
                 'jsonb',
                 encoder=json.dumps,
                 decoder=json.loads,
                 schema='pg_catalog')
+            await conn.close()
         except Exception as e:
+
             print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
             print(e)
-            quit()
-        finally:
-            await conn.close()
-
+            await self.logout()
+            
     async def on_ready(self):
         await self.__init()
         for extension in cogs:
