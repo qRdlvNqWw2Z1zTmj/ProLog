@@ -27,12 +27,7 @@ class DatabaseFunctions:
                 return None
         return result
 
-<<<<<<< HEAD
     @async_cached_function()
-=======
-
-    @cached_function()
->>>>>>> 86324b539ad8f7a644dc8a5b1f48c07ab7c3e05f
     async def get_prefixes(self, bot, message):
         return await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
 
