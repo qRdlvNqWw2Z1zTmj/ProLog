@@ -212,60 +212,72 @@ class LFUCache(object):
         else:
             self.freq_link_head.append_cache_to_tail(cache_node)
 
-class CachedFunction:
-    def __init__(self, func, limit=1000):
-        self.limit = limit
-        self.cache = LFUCache(limit=self.limit)
-        self.func = func
 
-    def __call__(self, *args, **kwargs):
+
+def async_cached_function(limit: int=1000):
+    class CachedFunction:
+        def __init__(self, func):
+            self.limit = limit
+            self.cache = LFUCache(limit=self.limit)
+            self.func = func
+
+        def __call__(self, *args, **kwargs):
+                id = self.get_id(*args, **kwargs) 
+                try:
+                    return self.cache[id]
+                except KeyError:
+                    res = self.func(*args, **kwargs)
+                    self.cache[id] = res
+                    return res
+
+        def get_id(self, *args, **kwargs): 
+            args.append(kwargs)
+            return hash(args) 
+
+        def invalidate(self, id):
+            try:
+                del self.cache[id]
+            except KeyError: pass
+
+        def invalidate_cache(self):
+            self.cache = LFUCache(limit=self.limit)
+
+    class AsyncCachedFunction(CachedFunction):
+        async def __call__(self, *args, **kwargs):
             id = self.get_id(*args, **kwargs) 
             try:
                 return self.cache[id]
             except KeyError:
-                res = self.func(*args, **kwargs)
+                res = await self.func(*args, **kwargs)
                 self.cache[id] = res
                 return res
 
-    def get_id(self, *args, **kwargs): 
-        args.append(kwargs)
-        return hash(args) 
-
-    def invalidate(self, id):
-        try:
-            del self.cache[id]
-        except KeyError: pass
-
-    def invalidate_cache(self):
-        self.cache = LFUCache(limit=self.limit)
-
-class AsyncCachedFunction(CachedFunction):
-    async def __call__(self, *args, **kwargs):
-        id = self.get_id(*args, **kwargs) 
-        try:
-            return self.cache[id]
-        except KeyError:
-            res = await self.func(*args, **kwargs)
-            self.cache[id] = res
-            return res
+    return AsyncCachedFunction
 
 def cached_function(limit: int=1000):
-    def dec(fn):
-        if asyncio.iscoroutinefunction(fn): 
-            newfn = AsyncCachedFunction(fn, limit=limit)
-            @wraps(fn)
-            async def wrapper(*args, **kwargs):
-                return await newfn(*args, **kwargs)
-        else: 
-            newfn = CachedFunction(fn, limit=limit)
-            def wrapper(*args, **kwargs):
-                return newfn(*args, **kwargs)
-        
-        for a in dir(newfn):
-            try:
-                setattr(wrapper, a, getattr(newfn, a)) 
-            except:
-                pass
+    class CachedFunction:
+        def __init__(self, func):
+            self.limit = limit
+            self.cache = LFUCache(limit=self.limit)
+            self.func = func
 
-        return wrapper
-    return dec
+        def __call__(self, *args, **kwargs):
+                id = self.get_id(*args, **kwargs) 
+                try:
+                    return self.cache[id]
+                except KeyError:
+                    res = self.func(*args, **kwargs)
+                    self.cache[id] = res
+                    return res
+
+        def get_id(self, *args, **kwargs): 
+            args.append(kwargs)
+            return hash(args) 
+
+        def invalidate(self, id):
+            try:
+                del self.cache[id]
+            except KeyError: pass
+
+        def invalidate_cache(self):
+            self.cache = LFUCache(limit=self.limit)

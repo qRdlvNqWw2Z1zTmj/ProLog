@@ -1,4 +1,4 @@
-from .cache import cached_function
+from .cache import cached_function, async_cached_function
 
 class DatabaseFunctions:
     def __init__(self, bot):
@@ -20,7 +20,7 @@ class DatabaseFunctions:
             result = result[key]
         return result
 
-    @cached_function()
+    @async_cached_function()
     async def get_prefixes(self, bot, message):
         return await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
     
