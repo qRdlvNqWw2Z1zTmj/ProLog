@@ -1,7 +1,5 @@
-from bot import ProLog
 import config
-import traceback
-import sys
+from bot import ProLog
 
 if __name__ == '__main__':
     bot = ProLog()

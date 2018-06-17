@@ -1,4 +1,6 @@
+import json
 from .cache import cached_function, async_cached_function
+
 
 class DatabaseFunctions:
     def __init__(self, bot):
@@ -17,21 +19,29 @@ class DatabaseFunctions:
                       VALUES ($1, $2)
                   """, guildid, ["!"])
         if key is not None:
-            result = result[key]
+            try:
+                result = result[key]
+            except TypeError:
+                if dbcolumn == "prefixes" and result is None:
+                    return "!"
+                return None
         return result
 
+<<<<<<< HEAD
     @async_cached_function()
+=======
+
+    @cached_function()
+>>>>>>> 86324b539ad8f7a644dc8a5b1f48c07ab7c3e05f
     async def get_prefixes(self, bot, message):
         return await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
-    
+
 
     async def set_prefix(self, message, value):
         self.get_prefixes.invalidate(self.get_prefixes.get_id(self.bot, message))
         await self.set_item(message.guild.id, "configs", "prefixes", value)
-        
-    async def get_modules(self, guildid: int):
-        pass
-    
+
+
     async def set_item(self, guildid: int, dbtable, dbcolumn, value):
         async with self.bot.db.acquire() as connection:
             async with connection.transaction():
@@ -57,4 +67,3 @@ class DatabaseFunctions:
 
 def setup(bot):
     bot.add_cog(DatabaseFunctions(bot))
-#whitespace
