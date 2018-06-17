@@ -8,20 +8,13 @@ import discord
 from discord.ext import commands
 
 import config
-
-cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
-        "cogs.guildevents", "cogs.modules.on_typing", "cogs.modules.on_member_update",
-        "cogs.utils.dbfunctions", "cogs.dbcommands", "cogs.utils.dbfunctions"]
-
-modules = []
-modules += ["TypingLogs-Typing"]  # Modules for on_typing.py
-modules += ["MemberLogs-Nickname", "MemberLogs-Status"]  # Modules for on_member_update.py
+from cogs.utils import data
 
 
 class ProLog(commands.Bot):
     def __init__(self):
-        self._cogs = cogs
-        self.modules = modules
+        self._cogs = data.cogs
+        self.modules = data.modules
         self._prefix_cog = None
 
         async def prefix(bot, message):
@@ -42,22 +35,21 @@ class ProLog(commands.Bot):
             async def init_connection(conn):
                 await conn.set_type_codec('jsonb', encoder=json.dumps, decoder=json.loads, schema='pg_catalog')
             self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql, init=init_connection), 10)
-            conn = await asyncpg.connect(config.postgresql)
         except Exception as e:
             print(e)
             print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
             quit()
-        finally:
-            await conn.close()
 
     async def on_ready(self):
         await self.__init()
-        for extension in cogs:
+
+        for extension in data.cogs:
             try:
                 self.load_extension(extension)
             except Exception as e:
                 print(f'Failed to load extension {extension}.', file=sys.stderr)
                 traceback.print_exc()
+
         print('=' * 10)
         print(f'Logged in as {self.user} with the id {self.user.id}')
         print("Logged into PostgresSQL server")
@@ -74,3 +66,5 @@ class ProLog(commands.Bot):
 if __name__ == '__main__':
     bot = ProLog()
     bot.run(config.token)
+
+

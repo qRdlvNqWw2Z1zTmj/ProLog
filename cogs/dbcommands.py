@@ -35,8 +35,8 @@ class DatabaseCommands:
         prefixes = await self.dbfuncs.get_prefixes(self.bot, ctx.message)
         for p in prefix:
             prefixes.append(p)
-            prefixes.sort()  #Makes things nice
-        prefixes = list(set(prefixes))  #Remove dupes
+            prefixes.sort()  # Makes things nice
+        prefixes = list(set(prefixes))  # Remove dupes
         await self.dbfuncs.set_prefix(ctx.message, prefixes)
         await functions.completed(ctx.message)
 
@@ -74,15 +74,16 @@ class DatabaseCommands:
         modules = []
         channels = []
         badargs = []
-        dict = {}
+        uploaddict = {}
 
-        # Parse args
+        # Parse args (I could make this user Regex. I'm not sure yet)
         for a in args:
             try:
                 channel = await TextChannelConverter().convert(ctx, a)
                 channels.append(channel)
             except commands.errors.BadArgument:
-                if not a.casefold() in map(str.casefold, self.bot.modules):
+                print(f"Module keys: {[x.keys() for x in self.bot.modules]}")
+                if not a.casefold() in map(str.casefold, [x.keys() for x in self.bot.modules]):
                     badargs.append(a)
                 else:
                     # Fix random cases
@@ -98,7 +99,7 @@ class DatabaseCommands:
 
         # Construct dict
         for m in modules:
-            dict[m] = [c.id for c in channels]
+            uploaddict[m] = [c.id for c in channels]
         await self.dbfuncs.set_item(ctx.guild.id, "configs", "modules", dict)
 
         await ctx.send(f"Dict that would be JSON'd then uploaded: {dict}")
