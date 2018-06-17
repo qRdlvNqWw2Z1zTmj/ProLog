@@ -2,11 +2,11 @@ import asyncio
 import json
 import sys
 import traceback
-import ssl
+
 import asyncpg
 import discord
 from discord.ext import commands
-import os.path
+
 import config
 from cogs.utils import data
 
@@ -30,21 +30,20 @@ class ProLog(commands.Bot):
 
         super().__init__(command_prefix=prefix)
 
-    async def _init(self):
-        async def init_connection(conn):
-            await conn.set_type_codec('jsonb', encoder=json.dumps, decoder=json.loads, schema='pg_catalog')
+    async def __init(self):
         try:
-            poolssl = ssl.create_default_context(
-                cafile=os.path.join(os.path.dirname(__file__), 'server-ca.pem')
-            )
-            self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql, init=init_connection, ssl=poolssl if config.ssl else None), 10)
+            async def init_connection(conn):
+                await conn.set_type_codec('jsonb', encoder=json.dumps, decoder=json.loads, schema='pg_catalog')
+            self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql, init=init_connection), 10)
+            
         except Exception as e:
-            print("Could not conntect not Postgres databse. Exiting", file=sys.stderr)
-            print(e)
+
+            print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
+            print(f'{e.__class__.__name__}: {e}')
             await self.logout()
             
     async def on_ready(self):
-        await self._init()
+        await self.__init()
 
         for extension in data.cogs:
             try:
