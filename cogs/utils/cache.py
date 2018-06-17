@@ -252,30 +252,7 @@ def async_cached_function(limit: int=1000):
                 self.cache[id] = res
                 return res
 
-<<<<<<< HEAD
     return AsyncCachedFunction
-=======
-    def get_id(self, *args, **kwargs):
-        return hash((frozenset(args), frozenset(kwargs.items())))
-
-    def invalidate(self, id):
-        try:
-            del self.cache[id]
-        except KeyError: pass
-
-    def invalidate_cache(self):
-        self.cache = LFUCache(limit=self.limit)
-
-class AsyncCachedFunction(CachedFunction):
-    async def __call__(self, *args, **kwargs):
-        id = self.get_id(*args, **kwargs) 
-        try:
-            return self.cache[id]
-        except KeyError:
-            res = await self.func(*args, **kwargs)
-            self.cache[id] = res
-            return res
->>>>>>> 86324b539ad8f7a644dc8a5b1f48c07ab7c3e05f
 
 def cached_function(limit: int=1000):
     class CachedFunction:
