@@ -43,7 +43,7 @@ class ProLog(commands.Bot):
         except Exception as e:
 
             print("Could not conntect not PostGreSQL databse. Exiting", file=sys.stderr)
-            print(e)
+            print(f'{e.__class__.__name__}: {e}')
             await self.logout()
             
     async def on_ready(self):
