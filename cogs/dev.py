@@ -1,8 +1,9 @@
-import asyncio
 import traceback
 
 from discord.ext import commands
+
 from .utils import functions
+
 
 class Dev:
     def __init__(self, bot):
@@ -24,10 +25,8 @@ class Dev:
     @commands.command()
     async def logout(self, ctx):
         """Logs the bot out."""
-        await ctx.send('Logged out')
-        await self.bot.prefixes.close()
-        await self.bot.configs.close()
-        self.bot.logout()
+        await self.bot.db.close()
+        await self.bot.logout()
 
 
     @commands.command()
