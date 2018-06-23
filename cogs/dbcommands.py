@@ -69,40 +69,43 @@ class DatabaseCommands:
     @log.command()
     async def start(self, ctx, *args):
         """Starts lmodule logging in specified channels.
-        It doesn't matter in what order the modules and channels are in, as long as they're correct and separated by spaces it will succeed.
+        It does not matter in what order the modules and channels are in, as long as they're correct and separated by spaces the command will work.
         A list of modules and module catagories can be shown with ."""
         modules = []
         channels = []
         badargs = []
         uploaddict = {}
 
-        # Parse args (I could make this user Regex. I'm not sure yet)
+        # Parse args (I could make this Regex. I'm not sure yet)
         for a in args:
             try:
                 channel = await TextChannelConverter().convert(ctx, a)
                 channels.append(channel)
-            except commands.errors.BadArgument:
-                print(f"Module keys: {[x.keys() for x in self.bot.modules]}")
-                if not a.casefold() in map(str.casefold, [x.keys() for x in self.bot.modules]):
+                print(f"Added channel {channel}")
+            except discord.ext.commands.errors.BadArgument:
+                print(f"Module keys: {[x for x in self.bot.modules.keys()]}")
+                if not a.casefold() in map(str.casefold, [x for x in self.bot.modules.keys()]):
                     badargs.append(a)
                 else:
                     # Fix random cases
                     for m in self.bot.modules:
                         if a.lower() == m.lower():
                             a = m
+                    print(f"New module {a}")
                     modules.append(a)
+
 
         # Error on no channels
         if not channels:
             await ctx.send("Please provide a channel mention, name or id")
             return
 
-        # Construct dict
-        for m in modules:
-            uploaddict[m] = [c.id for c in channels]
-        await self.dbfuncs.set_item(ctx.guild.id, "configs", "modules", dict)
+        # Error on no modules
+        if not modules:
+            await ctx.send("Please provide a valid module")
+            return
 
-        await ctx.send(f"Dict that would be JSON'd then uploaded: {dict}")
+
 
         # Say on bad args
         if badargs:
@@ -113,6 +116,20 @@ class DatabaseCommands:
         if modules:
             await ctx.send(f"Started logging modules "
                            f"{', '.join([m for m in modules])} in {', '.join([c.mention for c in channels])}")
+
+
+
+        # Construct dict
+        for m in modules:
+            uploaddict[m] = [c.id for c in channels]
+
+        print(uploaddict)
+
+        await self.dbfuncs.set_item(ctx.guild.id, "configs", "modules", dict)
+
+        await ctx.send(f"Dict that would be JSON'd then uploaded: {dict}")
+
+
 
     @log.group()
     async def show(self, ctx):
