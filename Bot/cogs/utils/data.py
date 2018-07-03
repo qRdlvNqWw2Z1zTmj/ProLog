@@ -1,5 +1,5 @@
 cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler", "cogs.guildevents",
-        "cogs.modules.on_typing", "cogs.modules.on_member_update"]
+        "cogs.modules.on_typing", "cogs.modules.on_member_update", "cogs.dbcommands"]
 
 
 modules = {}

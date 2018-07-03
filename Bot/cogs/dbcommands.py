@@ -7,12 +7,10 @@ from .utils import functions
 class DatabaseCommands:
     def __init__(self, bot):
         self.bot = bot
+        self.dbfuncs = bot.dbfuncs
 
-    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
-    async def prefix(self, ctx):
-        if ctx.invoked_subcommand is not None:
-            return
-        prefixes = await self.bot.get_prefix(ctx.message)
+    def clean(self, prefixes: list):
+        print(prefixes)
         try:
             prefixes.remove(f'<@{self.bot.user.id}> ')
         except ValueError:
@@ -21,6 +19,14 @@ class DatabaseCommands:
             prefixes.remove(f'<@!{self.bot.user.id}> ')
         except ValueError:
             pass
+        print(prefixes)
+        return prefixes
+
+    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
+    async def prefix(self, ctx):
+        if ctx.invoked_subcommand is not None:
+            return
+        prefixes = self.clean(await self.bot.get_prefix(ctx.message))
         stuff = '`\n`'.join(prefixes)
         desc = f'`{stuff}`'
         embed = discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description=desc,
@@ -29,7 +35,7 @@ class DatabaseCommands:
 
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
-        prefixes = await self.dbfuncs.get_prefixes(self.bot, ctx.message)
+        prefixes = self.clean(await self.dbfuncs.get_prefixes(self.bot, ctx.message))
         for p in prefix:
             prefixes.append(p)
             prefixes.sort()  # Makes things nice
@@ -39,7 +45,7 @@ class DatabaseCommands:
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
-        prefixes = await self.dbfuncs.get_prefixes(self.bot, ctx.message)
+        prefixes = self.clean(await self.dbfuncs.get_prefixes(self.bot, ctx.message))
         errs = 0
         for p in prefix:
             if p not in prefixes: 

@@ -2,6 +2,7 @@ import asyncio
 import json
 import sys
 import traceback
+import asyncio
 
 import asyncpg
 import discord
@@ -12,20 +13,18 @@ from cogs.utils import data
 
 
 class ProLog(commands.Bot):
+    extensions = {}
+    config = config
     def __init__(self):
         self.modules = data.modules
-        super().__init__(command_prefix=functions.Functions(self).get_prefixes)
+        
+        super().__init__(command_prefix="!")
 
     async def on_ready(self):
-        async def init_connection(conn):
-            await conn.set_type_codec("jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog")
-
-        try:
-            self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql, init=init_connection), 10)
-        except Exception as e:
-            print(f"Could not connect not Postgres database. Exiting", file=sys.stderr)
-            traceback.print_exc()
-            await self.logout()
+        self.load_extension("cogs.utils.functions")
+        await asyncio.sleep(10)
+        self.command_prefix = self.dbfuncs.get_prefixes
+        bot.db = bot.db.result()
 
         for extension in data.cogs:
             try:
