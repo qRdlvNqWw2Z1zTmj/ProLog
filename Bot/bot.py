@@ -6,33 +6,26 @@ import traceback
 import asyncpg
 import discord
 from discord.ext import commands
-
+from cogs.utils import functions
 import config
 from cogs.utils import data
-from cogs.utils import dbfunctions
 
 
 class ProLog(commands.Bot):
     def __init__(self):
-        self._cogs = data.cogs
         self.modules = data.modules
-        async def prefix(bot, message):
-            prefixes = await dbfunctions.DatabaseFunctions(self).get_prefixes(bot, message)
-            return commands.when_mentioned_or(*prefixes)(bot, message)
-        super().__init__(command_prefix=prefix)
+        super().__init__(command_prefix=functions.Functions(self).get_prefixes)
 
-    async def _init(self):
+    async def on_ready(self):
         async def init_connection(conn):
             await conn.set_type_codec("jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog")
+
         try:
             self.db = await asyncio.wait_for(asyncpg.create_pool(config.postgresql, init=init_connection), 10)
         except Exception as e:
-            print("Could not conntect not Postgres databse. Exiting", file=sys.stderr)
-            print(e)
+            print(f"Could not connect not Postgres database. Exiting", file=sys.stderr)
+            traceback.print_exc()
             await self.logout()
-
-    async def on_ready(self):
-        await self._init()
 
         for extension in data.cogs:
             try:
@@ -40,6 +33,7 @@ class ProLog(commands.Bot):
             except Exception as e:
                 print(f"Failed to load extension {extension}.", file=sys.stderr)
                 traceback.print_exc()
+
 
         print("=" * 10)
         print(f"Logged in as {self.user} with id {self.user.id}")

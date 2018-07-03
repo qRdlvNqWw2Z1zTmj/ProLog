@@ -2,7 +2,6 @@ import asyncio
 from functools import wraps
 
 class LFUNode:
-
     __slots__ = ('key', 'value', 'freqnode', 'previous', 'next')
 
     def __init__(self, key, value, freqnode, previous, next_):

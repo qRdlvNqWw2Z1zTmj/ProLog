@@ -1,15 +1,12 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import TextChannelConverter
 
-from .utils import dbfunctions
 from .utils import functions
 
 
 class DatabaseCommands:
     def __init__(self, bot):
         self.bot = bot
-        self.dbfuncs = dbfunctions.DatabaseFunctions(bot)
 
     @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
     async def prefix(self, ctx):

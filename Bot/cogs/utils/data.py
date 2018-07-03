@@ -1,6 +1,6 @@
-cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler",
-        "cogs.guildevents", "cogs.modules.on_typing", "cogs.modules.on_member_update",
-        "cogs.utils.dbfunctions", "cogs.dbcommands", "cogs.utils.dbfunctions"]
+cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.errorhandler", "cogs.guildevents",
+        "cogs.modules.on_typing", "cogs.modules.on_member_update"]
+
 
 modules = {}
 
