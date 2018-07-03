@@ -10,7 +10,6 @@ class DatabaseCommands:
         self.dbfuncs = bot.dbfuncs
 
     def clean(self, prefixes: list):
-        print(prefixes)
         try:
             prefixes.remove(f'<@{self.bot.user.id}> ')
         except ValueError:
@@ -19,7 +18,6 @@ class DatabaseCommands:
             prefixes.remove(f'<@!{self.bot.user.id}> ')
         except ValueError:
             pass
-        print(prefixes)
         return prefixes
 
     @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
