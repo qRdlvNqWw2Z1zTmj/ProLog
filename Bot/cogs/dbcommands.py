@@ -1,13 +1,13 @@
 import discord
 from discord.ext import commands
-
 from .utils import functions
-
+import re
 
 class DatabaseCommands:
     def __init__(self, bot):
         self.bot = bot
         self.dbfuncs = bot.dbfuncs
+        self.pattern = re.compile(r"<..?[0-9]{18}>")
 
     def clean(self, prefixes: list):
         try:
@@ -34,12 +34,25 @@ class DatabaseCommands:
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
         prefixes = self.clean(await self.dbfuncs.get_prefixes(self.bot, ctx.message))
+        added = 0
+
         for p in prefix:
+            if self.pattern.match(p):
+                await ctx.send('Prefix cannot be any kind of mention.')
+                continue
+
             prefixes.append(p)
-            prefixes.sort()  # Makes things nice
+            added +=1
+
+        prefixes.sort()  # Makes things nice
         prefixes = list(set(prefixes))  # Remove dupes
-        await self.dbfuncs.set_prefix(ctx.message, prefixes)
-        await functions.completed(ctx.message)
+
+        if added != 0:
+            await self.dbfuncs.set_prefix(ctx.message, prefixes)
+            return await functions.completed(ctx.message)
+        
+        await ctx.send('No prefixes were added.')
+        await functions.not_completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
