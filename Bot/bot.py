@@ -24,7 +24,10 @@ class ProLog(commands.Bot):
         self.load_extension("cogs.utils.functions")
         await asyncio.sleep(10)
         self.command_prefix = self.dbfuncs.get_prefixes
-        bot.db = bot.db.result()
+        try:
+            self.db = self.db.result()
+        except AttributeError:
+            pass
 
         for extension in data.cogs:
             try:
@@ -45,7 +48,35 @@ class ProLog(commands.Bot):
         if not isinstance(message.channel, discord.TextChannel) or message.author.bot:
             return
         await self.process_commands(message)
+        
+    async def on_member_remove(self, member):
+        bans = await member.guild.bans()
+        users = [c.user for c in bans]
+        user = self.get_user(member.id)
+        if user in users:
+            return self.dispatch('member_ban', discord.utils.get(bans, user=user))
 
+        async for entry in member.guild.audit_logs(limit=1, action=discord.AuditLogAction.kick):
+            if entry.target == user:
+                f = None
+                for c in member.guild.channels:
+                    p = c.permissions_for(member.guild.me)
+                    if p.create_instant_invite:
+                        if isinstance(c, discord.TextChannel):
+                            f = c
+                            break
+
+                if f is not None:
+                    self.dispatch('member_kick', member, entry)
+                    inv = await f.create_invite()
+                    await inv.delete()
+                    return
+
+        self.dispatch('member_leave', member)
+
+    async def on_member_ban(self, banentry): pass
+    async def on_member_kick(self, member, entry): pass
+    async def on_member_leave(self, member): pass
 
 if __name__ == "__main__":
     bot = ProLog()
