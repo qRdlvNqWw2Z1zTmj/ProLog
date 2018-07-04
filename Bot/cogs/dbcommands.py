@@ -37,7 +37,7 @@ class DatabaseCommands:
         added = 0
 
         for p in prefix:
-            if self.pattern.match(p):
+            if self.pattern.match(p) or p in ['@everyone', '@here']:
                 await ctx.send('Prefix cannot be any kind of mention.')
                 continue
 
@@ -47,8 +47,10 @@ class DatabaseCommands:
         prefixes.sort()  # Makes things nice
         prefixes = list(set(prefixes))  # Remove dupes
 
-        if added != 0:
+        if added:
             await self.dbfuncs.set_prefix(ctx.message, prefixes)
+            suff = 'es'*bool(added-1)
+            await ctx.send(f'{added} prefix{suff} added!')
             return await functions.completed(ctx.message)
         
         await ctx.send('No prefixes were added.')
@@ -57,17 +59,21 @@ class DatabaseCommands:
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
         prefixes = self.clean(await self.dbfuncs.get_prefixes(self.bot, ctx.message))
-        errs = 0
+        removed = 0
         for p in prefix:
             if p not in prefixes: 
                 await ctx.send(f'{p} does not exist!')
-                errs += 1
+
             else:
                 prefixes.remove(p)
+                removed += 1
         await self.dbfuncs.set_prefix(ctx.message, prefixes)
-        if len(prefix) == errs: 
+        if not removed: 
             await functions.not_completed(ctx.message)
             return await ctx.send('No prefix was removed!')
+
+        suff = 'es'*bool(removed-1)
+        await ctx.send(f'{removed} prefix{suff} removed!')
         await functions.completed(ctx.message)
 
 
