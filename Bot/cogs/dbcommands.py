@@ -24,9 +24,10 @@ class DatabaseCommands:
     async def prefix(self, ctx):
         if ctx.invoked_subcommand is not None:
             return
+        w = 30
         prefixes = self.clean(await self.bot.get_prefix(ctx.message))
-        stuff = '`\n`'.join(prefixes)
-        desc = f'`{stuff}`'
+        stuff = '"\n"'.join(prefixes)
+        desc = f'"{stuff}"'.ljust(w)
         embed = discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description=desc,
                               color=discord.Color.dark_teal())
         await ctx.send(embed=embed)
