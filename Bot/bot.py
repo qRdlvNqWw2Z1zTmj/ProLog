@@ -57,6 +57,9 @@ class ProLog(commands.Bot):
             return self.dispatch('member_ban', discord.utils.get(bans, user=user))
 
         async for entry in member.guild.audit_logs(limit=1):
+            if entry.action != discord.AuditLogAction.kick:
+                return
+                
             if entry.target == user:
                 f = None
                 for c in member.guild.channels:
