@@ -56,7 +56,7 @@ class ProLog(commands.Bot):
         if user in users:
             return self.dispatch('member_ban', discord.utils.get(bans, user=user))
 
-        async for entry in member.guild.audit_logs(limit=1, action=discord.AuditLogAction.kick):
+        async for entry in member.guild.audit_logs(limit=1):
             if entry.target == user:
                 f = None
                 for c in member.guild.channels:
@@ -68,8 +68,9 @@ class ProLog(commands.Bot):
 
                 if f is not None:
                     self.dispatch('member_kick', member, entry)
-                    inv = await f.create_invite()
-                    await inv.delete()
+                    r = "This is an action that lets the bot differentiate between member kick and member leave."
+                    inv = await f.create_invite(reason=r)
+                    await inv.delete(reason=r)
                     return
 
         self.dispatch('member_leave', member)
