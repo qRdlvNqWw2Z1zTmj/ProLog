@@ -54,8 +54,6 @@ class ProLog(commands.Bot):
         bans = await member.guild.bans()
         users = [c.user for c in bans]
         user = self.get_user(member.id)
-        if user in users:
-            return self.dispatch('member_ban', discord.utils.get(bans, user=user))
 
         async for entry in member.guild.audit_logs(limit=1):
             if entry.action != discord.AuditLogAction.kick:
