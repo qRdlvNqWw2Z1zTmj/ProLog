@@ -29,7 +29,7 @@ class Functions:
         if result is None:
             async with self.bot.db.acquire() as connection:
                 async with connection.transaction():
-                    await connection.execute(f"""
+                    await connection.execute("""
                       INSERT INTO configs(guildid, prefixes)
                       VALUES ($1, $2)
                   """, guildid, ["!"])
@@ -44,7 +44,7 @@ class Functions:
 
     @cached_function()
     async def get_prefixes(self, bot, message):
-        dbprefixes = await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
+        dbprefixes = await  self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
         return commands.when_mentioned_or(*dbprefixes)(bot, message)
 
 
