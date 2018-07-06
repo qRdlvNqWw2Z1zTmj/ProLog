@@ -22,6 +22,8 @@ class BotCommands:
     @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'], usage='<add/remove>')
     async def prefix(self, ctx):
         """Show ."""
+        if self.bot.dbfuncs is None:
+            return await ctx.send('Custom prefixes are unavailable.\nFor now, use prefix !')
         if ctx.invoked_subcommand is not None:
             return
         w = 30
@@ -34,6 +36,8 @@ class BotCommands:
 
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
+        if self.bot.dbfuncs is None:
+            return await ctx.send('Custom prefixes are unavailable.\nFor now, use prefix !')
         prefixes = self.clean(await self.bot.functions.get_prefixes(self.bot, ctx.message))
         added = 0
 
@@ -59,6 +63,8 @@ class BotCommands:
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
+        if self.bot.dbfuncs is None:
+            return await ctx.send('Custom prefixes are unavailable.\nFor now, use prefix !')
         prefixes = self.clean(await self.bot.functions.get_prefixes(self.bot, ctx.message))
         removed = 0
         for p in prefix:

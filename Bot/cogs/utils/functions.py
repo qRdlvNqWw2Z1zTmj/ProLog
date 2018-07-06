@@ -8,23 +8,20 @@ from discord.ext import commands
 
 from cogs.utils.cache import cached_function
 
+async def completed(message):
+    await message.add_reaction(":check:444926155800444949")
 
+async def not_completed(message):
+    await message.add_reaction("negative:444926170895613962")
 
+def escape(cont):
+    for c in cont:
+        cont.replace(c, f'\{c}')
+    return cont
 
 class Functions:
     def __init__(self, bot):
         self.bot = bot
-
-    async def completed(self, message):
-        await message.add_reaction(":check:444926155800444949")
-
-    async def not_completed(self, message):
-        await message.add_reaction("negative:444926170895613962")
-
-    def escape(self, cont):
-        for c in cont:
-            cont.replace(c, f'\{c}')
-        return cont
 
     async def get_row(self,  guildid: int, dbtable, dbcolumn, key=None):
         result = await self.bot.db.fetchrow(f"""
@@ -90,7 +87,7 @@ def setup(bot):
         try:
             bot.dbfuncs = Functions(bot)
             bot.command_prefix = bot.dbfuncs.get_prefixes
-            bot.db = await asyncio.wait_for(asyncpg.create_pool(bot.config.postgresql, init=init_connection), 10)
+            bot.db = await asyncpg.create_pool(bot.config.postgresql, init=init_connection)
         except Exception as e:
             print(f"Could not connect not Postgres database", file=sys.stderr)
             traceback.print_exc()
@@ -102,5 +99,5 @@ def setup(bot):
 def teardown(bot):
     bot.loop.create_task(bot.db.close())
     bot.db = None
-    bot.command_prefix = commands.when_mentioned_or(['!'])
+    bot.command_prefix = commands.when_mentioned_or('!')
 
