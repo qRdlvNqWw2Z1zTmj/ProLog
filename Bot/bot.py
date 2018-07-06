@@ -15,6 +15,8 @@ from cogs.utils import data
 class ProLog(commands.Bot):
     extensions = {}
     config = config
+    dbfuncs = None
+    db = None
     def __init__(self):
         self.modules = data.modules
         
@@ -22,12 +24,11 @@ class ProLog(commands.Bot):
 
     async def on_ready(self):
         self.load_extension("cogs.utils.functions")
-        await asyncio.sleep(10)
+
+        while self.dbfuncs is None:
+            await asyncio.sleep(1)
+
         self.command_prefix = self.dbfuncs.get_prefixes
-        try:
-            self.db = self.db.result()
-        except AttributeError:
-            pass
 
         for extension in data.cogs:
             try:

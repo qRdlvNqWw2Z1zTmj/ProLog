@@ -44,7 +44,10 @@ class Functions:
 
     @cached_function()
     async def get_prefixes(self, bot, message):
-        dbprefixes = await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
+        if self.bot.db is None:
+            dbprefixes = ['!']
+        else:
+            dbprefixes = await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
         return commands.when_mentioned_or(*dbprefixes)(bot, message)
 
 
@@ -78,13 +81,17 @@ def setup(bot):
     async def init_connection(conn):
             await conn.set_type_codec("jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog")
 
-    try:
-        bot.db = bot.loop.create_task(asyncio.wait_for(asyncpg.create_pool(bot.config.postgresql, init=init_connection), 10))
-        bot.dbfuncs = Functions(bot)
-    except Exception as e:
-        print(f"Could not connect not Postgres database. Exiting", file=sys.stderr)
-        traceback.print_exc()
-        bot.loop.create_task(bot.logout())
+    async def init(bot):
+        try:
+            bot.dbfuncs = Functions(bot)
+            bot.db = await asyncio.wait_for(asyncpg.create_pool(bot.config.postgresql, init=init_connection), 10)
+        except Exception as e:
+            print(f"Could not connect not Postgres database", file=sys.stderr)
+            traceback.print_exc()
+            print()
+
+
+    bot.loop.create_task(init(bot))
 
 def teardown(bot):
     bot.loop.create_task(bot.db.close())
