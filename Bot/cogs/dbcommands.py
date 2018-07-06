@@ -20,8 +20,9 @@ class DatabaseCommands:
             pass
         return prefixes
 
-    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'])
+    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'], usage='<add/remove>')
     async def prefix(self, ctx):
+        """Shows this guilds prefix(es)."""
         if ctx.invoked_subcommand is not None:
             return
         w = 30

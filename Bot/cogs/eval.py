@@ -23,6 +23,7 @@ class Eval:
 
     @commands.command(hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
+        """Evaluates python code"""
         env = {
             'bot': self.bot,
             'ctx': ctx,

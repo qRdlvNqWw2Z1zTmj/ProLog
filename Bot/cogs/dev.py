@@ -12,6 +12,7 @@ class Dev:
 
     @commands.command()
     async def say(self, ctx, *, arg):
+        "Says something"
         await ctx.send(arg)
         await ctx.message.delete()
 

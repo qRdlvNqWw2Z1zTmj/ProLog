@@ -58,7 +58,7 @@ class HelpFormatter:
         command = self.bot.get_command(command)
         if command is None: return
         embed = discord.Embed(title=f'Help and usage for command `{command.name}`', color=discord.Color.dark_teal())
-        embed.add_field(name='Usage:', value=f'{self.ctx.prefix}{command.name} {command.usage}', inline=False)
+        embed.add_field(name='Usage:', value=f'{self.ctx.prefix}{command.name} {command.usage if command.usage is not None else ""}', inline=False)
         embed.add_field(name='Help:', value=command.help, inline=False)
         fields = sorted(embed.fields, key=attrgetter('name'))  # Sort embed fields by name
         for index, field in enumerate(fields):
@@ -80,6 +80,7 @@ class Help:
         Argument must be one of the choices mentioned.
         *: Argument is optional
         < >: Argument must be a single item
+        <arg1/arg2>: Argument must be one of the options separated by /
         [ ]: Argument can be more than one item. Use \"double qoutes\" to include spaces in argument.
         ( ): Same as < >, but spaces are automatically included.
         """
@@ -171,7 +172,7 @@ class Help:
         await ctx.send(embed=embed)
 
 
-    @commands.command()
+    @commands.command(usage="<suggestion>")
     async def suggest(self, ctx, *, suggestion):
         """
         Sends a suggestion to the support server
@@ -182,8 +183,8 @@ class Help:
         await self.suggestionch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
 
 
-    @commands.command()
-    async def bugreport(self, ctx, *, suggestion):
+    @commands.command(usage="<bugreport>")
+    async def bugreport(self, ctx, *, bugreport):
         """
         Sends a bugreport to the support server
         """
