@@ -1,12 +1,11 @@
-import discord
-from discord.ext import commands
-from .utils import functions
 import re
+from discord.ext import commands
+import discord
 
-class DatabaseCommands:
+
+class BotCommands:
     def __init__(self, bot):
         self.bot = bot
-        self.dbfuncs = bot.dbfuncs
         self.pattern = re.compile(r"<..?[0-9]{18}>")
 
     def clean(self, prefixes: list):
@@ -22,7 +21,7 @@ class DatabaseCommands:
 
     @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'], usage='<add/remove>')
     async def prefix(self, ctx):
-        """Shows this guilds prefix(es)."""
+        """Show ."""
         if ctx.invoked_subcommand is not None:
             return
         w = 30
@@ -35,7 +34,7 @@ class DatabaseCommands:
 
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
-        prefixes = self.clean(await self.dbfuncs.get_prefixes(self.bot, ctx.message))
+        prefixes = self.clean(await self.bot.functions.get_prefixes(self.bot, ctx.message))
         added = 0
 
         for p in prefix:
@@ -44,40 +43,41 @@ class DatabaseCommands:
                 continue
 
             prefixes.append(p)
-            added +=1
+            added += 1
 
         prefixes.sort()  # Makes things nice
         prefixes = list(set(prefixes))  # Remove dupes
 
         if added:
-            await self.dbfuncs.set_prefix(ctx.message, prefixes)
-            suff = 'es'*bool(added-1)
-            await ctx.send(f'{added} prefix{suff} added!')
-            return await functions.completed(ctx.message)
-        
+            await self.bot.functions.set_prefix(ctx.message, prefixes)
+            suff = 'es' * bool(added - 1)
+            await ctx.send(f'{added} prefix{suff} added')
+            return await self.bot.functions.completed(ctx.message)
+
         await ctx.send('No prefixes were added.')
-        await functions.not_completed(ctx.message)
+        await self.bot.functions.not_completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
-        prefixes = self.clean(await self.dbfuncs.get_prefixes(self.bot, ctx.message))
+        prefixes = self.clean(await self.bot.functions.get_prefixes(self.bot, ctx.message))
         removed = 0
         for p in prefix:
-            if p not in prefixes: 
+            if p not in prefixes:
                 await ctx.send(f'{p} does not exist!')
 
             else:
                 prefixes.remove(p)
                 removed += 1
-        await self.dbfuncs.set_prefix(ctx.message, prefixes)
-        if not removed: 
-            await functions.not_completed(ctx.message)
+        await self.bot.functions.set_prefix(ctx.message, prefixes)
+        if not removed:
+            await self.bot.functions.not_completed(ctx.message)
             return await ctx.send('No prefix was removed!')
 
-        suff = 'es'*bool(removed-1)
+        suff = 'es' * bool(removed - 1)
         await ctx.send(f'{removed} prefix{suff} removed!')
-        await functions.completed(ctx.message)
+        await self.bot.functions.completed(ctx.message)
+
 
 
 def setup(bot):
-    bot.add_cog(DatabaseCommands(bot))
+    bot.add_cog(BotCommands(bot))

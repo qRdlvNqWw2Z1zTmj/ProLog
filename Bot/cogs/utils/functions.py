@@ -1,25 +1,30 @@
-from discord.ext import commands
-from cogs.utils.cache import cached_function
+import asyncio
+import json
 import sys
 import traceback
-import asyncio
+
 import asyncpg
-import json
+from discord.ext import commands
 
-async def completed(message):
-    await message.add_reaction(":check:444926155800444949")
+from cogs.utils.cache import cached_function
 
-async def not_completed(message):
-    await message.add_reaction("negative:444926170895613962")
 
-def escape(cont):
-    for c in cont:
-        cont.replace(c, f'\{c}')
-    return cont
+
 
 class Functions:
     def __init__(self, bot):
         self.bot = bot
+
+    async def completed(self, message):
+        await message.add_reaction(":check:444926155800444949")
+
+    async def not_completed(self, message):
+        await message.add_reaction("negative:444926170895613962")
+
+    def escape(self, cont):
+        for c in cont:
+            cont.replace(c, f'\{c}')
+        return cont
 
     async def get_row(self,  guildid: int, dbtable, dbcolumn, key=None):
         result = await self.bot.db.fetchrow(f"""
