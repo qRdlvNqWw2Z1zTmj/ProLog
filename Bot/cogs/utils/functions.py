@@ -44,6 +44,12 @@ class Functions:
                 return None
         return result
 
+    async def get_module(self, guildid: int, modulename):
+        pass
+
+    async def set_module(self, guildid: int, module):
+        pass
+
     @cached_function()
     async def get_prefixes(self, bot, message):
         if self.bot.db is None:
