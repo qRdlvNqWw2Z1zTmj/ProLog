@@ -1,7 +1,6 @@
 class MemberUpdateLog:
     def __init__(self, bot):
         self.bot = bot
-        self.dbfuncs = bot.dbfuncs
 
     async def on_member_update(self, before, after):
         if before.name != after.name:

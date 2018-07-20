@@ -21,15 +21,12 @@ class BotCommands:
 
     @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'], usage='<add/remove>')
     async def prefix(self, ctx):
-        """Show ."""
-        if self.bot.dbfuncs is None:
-            return await ctx.send('Custom prefixes are unavailable.\nFor now, use prefix !')
+        """"""
         if ctx.invoked_subcommand is not None:
             return
-        w = 30
         prefixes = self.clean(await self.bot.get_prefix(ctx.message))
         stuff = '"\n"'.join(prefixes)
-        desc = f'"{stuff}"'.ljust(w)
+        desc = f'"{stuff}"'.ljust(30)
         embed = discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description=desc,
                               color=discord.Color.dark_teal())
         await ctx.send(embed=embed)
