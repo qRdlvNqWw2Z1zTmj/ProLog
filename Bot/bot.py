@@ -8,7 +8,7 @@ from discord.ext import commands
 
 import config
 from cogs.utils import data
-from cogs.utils import functions
+from cogs.utils.functions import get_prefixes
 
 
 class ProLog(commands.Bot):
@@ -17,7 +17,7 @@ class ProLog(commands.Bot):
     def __init__(self):
         self.modules = data.modules
         self.functions = functions.Functions(self)
-        super().__init__(command_prefix=self.functions.get_prefixes)
+        super().__init__(command_prefix=get_prefixes)
 
     async def on_ready(self):
         for extension in data.cogs:
