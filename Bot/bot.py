@@ -14,21 +14,12 @@ from cogs.utils import functions
 class ProLog(commands.Bot):
     extensions = {}
     config = config
-    dbfuncs = None
-    db = None
     def __init__(self):
         self.modules = data.modules
         self.functions = functions.Functions(self)
         super().__init__(command_prefix=self.functions.get_prefixes)
 
     async def on_ready(self):
-        self.load_extension("cogs.utils.functions")
-
-        while self.dbfuncs is None:
-            await asyncio.sleep(1)
-
-        self.command_prefix = self.dbfuncs.get_prefixes
-
         for extension in data.cogs:
             try:
                 self.load_extension(extension)
