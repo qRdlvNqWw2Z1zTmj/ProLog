@@ -6,7 +6,7 @@ import asyncpg
 
 import config
 from cogs.utils import data
-from cogs.utils.database import Database
+from cogs.utils.database import DatabaseFunctions
 from prolog import ProLog
 
 
@@ -26,7 +26,7 @@ def run_bot():
 
     bot.modules = data.modules
     bot.db = pool
-    bot.command_prefix = Database(bot).get_prefixes
+    bot.command_prefix = DatabaseFunctions(bot).get_prefixes
 
     bot.run(config.token)
 

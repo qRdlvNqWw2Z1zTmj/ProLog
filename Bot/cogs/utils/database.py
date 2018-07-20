@@ -3,7 +3,7 @@ from discord.ext import commands
 from cogs.utils.cache import cached_function
 
 
-class Database:
+class DatabaseFunctions:
     def __init__(self, bot):
         self.bot = bot
 

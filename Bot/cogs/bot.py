@@ -1,11 +1,16 @@
 import re
-from discord.ext import commands
-import discord
 
+import discord
+from discord.ext import commands
+
+from .utils.database import DatabaseFunctions
+from .utils.functions import Functions
 
 class BotCommands:
     def __init__(self, bot):
         self.bot = bot
+        self.Functions = Functions()
+        self.DatabaseFunctions = DatabaseFunctions(bot)
         self.pattern = re.compile(r"<..?[0-9]{18}>")
 
     def clean(self, prefixes: list):
@@ -33,9 +38,7 @@ class BotCommands:
 
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
-        if self.bot.dbfuncs is None:
-            return await ctx.send('Custom prefixes are unavailable.\nFor now, use prefix !')
-        prefixes = self.clean(await self.bot.functions.get_prefixes(self.bot, ctx.message))
+        prefixes = self.clean(await self.DatabaseFunctions.get_prefixes(self.bot, ctx.message))
         added = 0
 
         for p in prefix:
@@ -50,13 +53,13 @@ class BotCommands:
         prefixes = list(set(prefixes))  # Remove dupes
 
         if added:
-            await self.bot.functions.set_prefix(ctx.message, prefixes)
+            await self.DatabaseFunctions.set_prefix(ctx.message, prefixes)
             suff = 'es' * bool(added - 1)
             await ctx.send(f'{added} prefix{suff} added')
-            return await self.bot.functions.completed(ctx.message)
+            return await self.Functions.completed(ctx.message)
 
         await ctx.send('No prefixes were added.')
-        await self.bot.functions.not_completed(ctx.message)
+        await self.Functions.not_completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
@@ -73,7 +76,7 @@ class BotCommands:
                 removed += 1
         await self.bot.functions.set_prefix(ctx.message, prefixes)
         if not removed:
-            await self.bot.functions.not_completed(ctx.message)
+            await self.Functions.not_completed(ctx.message)
             return await ctx.send('No prefix was removed!')
 
         suff = 'es' * bool(removed - 1)
