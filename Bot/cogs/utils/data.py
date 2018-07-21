@@ -4,10 +4,31 @@ cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.bot", "cogs.
 
 modules = {}
 
-modules["Members"] = {
+modules["Member"] = {
+        "Typing":
+            {"Description": "Logs when a member has been typing for a specified amount of time without sending a message",
+             "Options":
+                 {"Name": "Time", "Description": "The amount of time in seconds before a user is logged. (Default: 10)", "Option": 10}
+             },
+
+        "Status Updates":
+            {"Description": "Logs when a member changes their status",
+                "Options":
+                    {"Name": "Status Type", "Description": """The type of status to log. Can be that statuses name or it's corresponding number
+                        \n1.) Playing
+                        \n2.) Watching
+                        \n3.) Streaming
+                        \n4.) Listening""", "Option": []}
+            },
+
+        ""
+
+
+
 
 }
 
-modules["Channels"] = {
+
+modules["Channel"] = {
 
 }
