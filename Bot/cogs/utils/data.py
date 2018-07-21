@@ -1,5 +1,5 @@
 cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.bot", "cogs.errorhandler", "cogs.guildevents",
-        "cogs.modules.on_typing", "cogs.modules.on_member_update"]
+        "cogs.modules"]
 
 
 modules = {}
@@ -11,7 +11,7 @@ modules["Member"] = {
                  {"Name": "Time", "Description": "The amount of time in seconds before a user is logged. (Default: 10)", "Option": 10}
              },
 
-        "Status Updates":
+        "StatusUpdates":
             {"Description": "Logs when a member changes their status",
                 "Options":
                     {"Name": "Status Type", "Description": """The type of status to log. Can be that statuses name or it's corresponding number
@@ -20,12 +20,6 @@ modules["Member"] = {
                         \n3.) Streaming
                         \n4.) Listening""", "Option": []}
             },
-
-        ""
-
-
-
-
 }
 
 
