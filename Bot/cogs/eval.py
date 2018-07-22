@@ -20,7 +20,6 @@ class Eval:
             return '\n'.join(content.split('\n')[1:-1])
         return content.strip('` \n')
 
-
     @commands.command(hidden=True, name='eval')
     async def _eval(self, ctx, *, body: str):
         """Evaluates python code"""
@@ -66,7 +65,6 @@ class Eval:
             else:
                 self._last_result = ret
                 await ctx.send(f'```py\n{value}{ret}\n```')
-
 
 
 def setup(bot):

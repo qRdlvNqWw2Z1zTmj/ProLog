@@ -7,7 +7,7 @@ class ModuleConverter(commands.Converter):
     async def convert(self, ctx, argument):
         try:
             category = argument[: argument.index("-")]
-            module = argument[argument.index("-") + 1 :]
+            module = argument[argument.index("-") + 1:]
         except ValueError:
             await ctx.send(f"'{argument}' is not a valid module category or module")
             return

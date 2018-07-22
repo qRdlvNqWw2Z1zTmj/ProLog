@@ -1,6 +1,5 @@
 from discord.ext import commands
 
-from .utils import data
 from .utils.converters import ModuleConverter
 
 
@@ -18,7 +17,6 @@ class Modules:
     @log.command()
     async def start(self, ctx, *module: ModuleConverter):
         await ctx.send(f"Would now log {module}")
-
 
 
 def setup(bot):

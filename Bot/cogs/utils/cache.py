@@ -1,6 +1,7 @@
 import asyncio
 from functools import wraps
 
+
 class LFUNode:
     __slots__ = ('key', 'value', 'freqnode', 'previous', 'next')
 
@@ -31,7 +32,6 @@ class LFUNode:
 
 
 class FreqNode:
-
     __slots__ = ('freq', 'previous', 'next', 'cache_head', 'cache_tail')
 
     def __init__(self, freq, previous, next_):
@@ -105,13 +105,12 @@ class FreqNode:
 
 
 class LFUCache(object):
-
     __slots__ = ('cache', 'limit', 'freq_link_head')
 
     def __init__(self, limit=1000):
         self.cache = {}
         if limit > 0:
-            self.limit = limit 
+            self.limit = limit
         else:
             raise ValueError('Limit must be more than 0')
         self.freq_link_head = None
@@ -210,6 +209,7 @@ class LFUCache(object):
         else:
             self.freq_link_head.append_cache_to_tail(cache_node)
 
+
 class _HashedSeq(list):
     """ This class guarantees that hash() will be called no more than once
         per element.  This is important because the lru_cache() will hash
@@ -225,10 +225,11 @@ class _HashedSeq(list):
     def __hash__(self):
         return self.hashvalue
 
+
 def _make_key(args, kwds, typed,
-             kwd_mark = (object(),),
-             fasttypes = {int, str, frozenset, type(None)},
-             tuple=tuple, type=type, len=len):
+              kwd_mark=(object(),),
+              fasttypes={int, str, frozenset, type(None)},
+              tuple=tuple, type=type, len=len):
     """Make a cache key from optionally typed positional and keyword arguments
     The key is constructed in a way that is flat as possible rather than
     as a nested structure that would take more memory.
@@ -253,60 +254,67 @@ def _make_key(args, kwds, typed,
         return key[0]
     return _HashedSeq(key)
 
+
 class CachedFunction:
-        def __init__(self, func, limit: int=100):
-            self.limit = limit
-            self.cache = LFUCache(limit=self.limit)
-            self.func = func
+    def __init__(self, func, limit: int = 100):
+        self.limit = limit
+        self.cache = LFUCache(limit=self.limit)
+        self.func = func
 
-        def __call__(self, *args, **kwargs):
-                id = self.get_id(*args, **kwargs) 
-                try:
-                    return self.cache[id]
-                except KeyError:
-                    res = self.func(*args, **kwargs)
-                    self.cache[id] = res
-                    return res
+    def __call__(self, *args, **kwargs):
+        id = self.get_id(*args, **kwargs)
+        try:
+            return self.cache[id]
+        except KeyError:
+            res = self.func(*args, **kwargs)
+            self.cache[id] = res
+            return res
 
-        @staticmethod
-        def get_id(*args, **kwargs): 
-            _make_key(args, kwargs, True)
+    @staticmethod
+    def get_id(*args, **kwargs):
+        _make_key(args, kwargs, True)
 
-        def invalidate(self, id):
-            try:
-                del self.cache[id]
-            except KeyError: pass
+    def invalidate(self, id):
+        try:
+            del self.cache[id]
+        except KeyError:
+            pass
 
-        def invalidate_cache(self):
-            self.cache = LFUCache(limit=self.limit)
+    def invalidate_cache(self):
+        self.cache = LFUCache(limit=self.limit)
+
 
 class AsyncCachedFunction(CachedFunction):
-        async def __call__(self, *args, **kwargs):
-            id = self.get_id(*args, **kwargs) 
-            try:
-                return self.cache[id]
-            except KeyError:
-                res = await self.func(*args, **kwargs)
-                self.cache[id] = res
-                return res
+    async def __call__(self, *args, **kwargs):
+        id = self.get_id(*args, **kwargs)
+        try:
+            return self.cache[id]
+        except KeyError:
+            res = await self.func(*args, **kwargs)
+            self.cache[id] = res
+            return res
 
-def cached_function(limit: int=1000):
+
+def cached_function(limit: int = 1000):
     def dec(fn):
-        if asyncio.iscoroutinefunction(fn): 
+        if asyncio.iscoroutinefunction(fn):
             newfn = AsyncCachedFunction(fn, limit=limit)
+
             @wraps(fn)
             async def wrapper(*args, **kwargs):
                 return await newfn(*args, **kwargs)
-        else: 
+        else:
             newfn = CachedFunction(fn, limit=limit)
+
             def wrapper(*args, **kwargs):
                 return newfn(*args, **kwargs)
-        
+
         for a in dir(newfn):
             try:
-                setattr(wrapper, a, getattr(newfn, a)) 
+                setattr(wrapper, a, getattr(newfn, a))
             except:
                 pass
 
         return wrapper
+
     return dec

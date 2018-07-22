@@ -6,6 +6,7 @@ from discord.ext import commands
 from .utils.database import DatabaseFunctions
 from .utils.functions import Functions
 
+
 class BotCommands:
     def __init__(self, bot):
         self.bot = bot
@@ -82,7 +83,6 @@ class BotCommands:
         suff = 'es' * bool(removed - 1)
         await ctx.send(f'{removed} prefix{suff} removed!')
         await self.bot.functions.completed(ctx.message)
-
 
 
 def setup(bot):

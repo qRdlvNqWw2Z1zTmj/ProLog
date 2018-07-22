@@ -14,7 +14,8 @@ def run_bot():
     loop = asyncio.get_event_loop()
 
     async def init_connection(conn):
-            await conn.set_type_codec("jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog")
+        await conn.set_type_codec("jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog")
+
     try:
         pool = loop.run_until_complete(asyncpg.create_pool(config.postgresql, init=init_connection))
     except Exception:
@@ -29,6 +30,7 @@ def run_bot():
     bot.command_prefix = DatabaseFunctions(bot).get_prefixes
 
     bot.run(config.token)
+
 
 if __name__ == "__main__":
     run_bot()

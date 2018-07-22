@@ -22,9 +22,7 @@ class ProLog(commands.Bot):
         print(f"Guild count: {len(self.guilds)}")
         print("=" * 10)
 
-
     async def on_message(self, message):
         if not isinstance(message.channel, discord.TextChannel) or message.author.bot:
             return
         await self.process_commands(message)
-

@@ -16,10 +16,10 @@ class ErrorHandler:
             self.errorch = self.bot.get_channel(440200135604043797)
 
         ignored = (discord.Forbidden, commands.CommandNotFound)
-    
+
         if isinstance(error, ignored):
             return
-            
+
         elif isinstance(error, commands.CheckFailure):
             if isinstance(error, commands.NotOwner):
                 a = []
@@ -40,22 +40,24 @@ class ErrorHandler:
             await ctx.send('You passed too many arguments')
             return
 
-        
+
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f'Command is on cooldown for {round(error.retry_after, 2)} more seconds.')
             return
 
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            await ctx.send(f'Required argument {str(error.param).split(":")[0]} is missing. See {self.bot.command_prefix[0]}help {ctx.command.name} for usage')
+            await ctx.send(
+                f'Required argument {str(error.param).split(":")[0]} is missing. See {self.bot.command_prefix[0]}help {ctx.command.name} for usage')
 
 
         else:
             msg = f"Guild: {ctx.guild.name}\nGuild ID: {ctx.guild.id}\nChannel: {ctx.channel.name}\nChannel ID:{ctx.channel.id}\nUser: {str(ctx.author)}\nUser ID: {ctx.author.id}\nCommand name: {ctx.command.name if ctx.command is not None else None}"
             t = traceback.format_exception(type(error), error, error.__traceback__)
-            
+
             a = ' '.join(t)
-            e = discord.Embed(timestamp=datetime.datetime.utcnow(), title='An unkown error occured:', description='```'+a+'```', color=discord.Color.red())
+            e = discord.Embed(timestamp=datetime.datetime.utcnow(), title='An unkown error occured:',
+                              description='```' + a + '```', color=discord.Color.red())
             e.add_field(name="Info", value=msg)
             try:
                 await self.errorch.send(embed=e)
@@ -63,7 +65,6 @@ class ErrorHandler:
                 pass
             print('Ignoring exception in command {ctx.command}:', file=sys.stderr)
             traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
-
 
 
 def setup(bot):

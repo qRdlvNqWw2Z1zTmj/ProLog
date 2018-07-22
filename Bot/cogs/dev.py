@@ -16,12 +16,10 @@ class Dev:
         await ctx.send(arg)
         await ctx.message.delete()
 
-
     @commands.command()
     async def purge(self, ctx, limit: int):
         """Removes a certain amount of messages."""
         await ctx.channel.purge(limit=limit)
-
 
     @commands.command()
     async def logout(self, ctx):
@@ -29,7 +27,6 @@ class Dev:
         await self.bot.db.close()
         await self.Functions.completed(ctx.message)
         await self.bot.logout()
-
 
     @commands.command()
     async def load(self, ctx, *, module):
@@ -41,7 +38,6 @@ class Dev:
         else:
             await self.Functions.completed(ctx.message)
 
-
     @commands.command()
     async def unload(self, ctx, *, module):
         """Unloads a module."""
@@ -51,7 +47,6 @@ class Dev:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
         else:
             await self.Functions.completed(ctx.message)
-
 
     @commands.command()
     async def reload(self, ctx, module):
@@ -64,7 +59,6 @@ class Dev:
             return
         else:
             await self.Functions.completed(ctx.message)
-
 
 
 def setup(bot):

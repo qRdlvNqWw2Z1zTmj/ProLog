@@ -1,9 +1,10 @@
 import asyncio
 from operator import attrgetter
-from .utils import functions
 
 import discord
 from discord.ext import commands
+
+from .utils import functions
 
 
 class HelpFormatter:
@@ -58,7 +59,9 @@ class HelpFormatter:
         command = self.bot.get_command(command)
         if command is None: return
         embed = discord.Embed(title=f'Help and usage for command `{command.name}`', color=discord.Color.dark_teal())
-        embed.add_field(name='Usage:', value=f'{self.ctx.prefix}{command.name} {command.usage if command.usage is not None else ""}', inline=False)
+        embed.add_field(name='Usage:',
+                        value=f'{self.ctx.prefix}{command.name} {command.usage if command.usage is not None else ""}',
+                        inline=False)
         embed.add_field(name='Help:', value=command.help, inline=False)
         fields = sorted(embed.fields, key=attrgetter('name'))  # Sort embed fields by name
         for index, field in enumerate(fields):
@@ -66,12 +69,10 @@ class HelpFormatter:
         return embed
 
 
-
 class Help:
     def __init__(self, bot):
         self.bot = bot
         self.suggestionch = self.bugreportch = None
-
 
     @commands.command()
     async def help(self, ctx, cmd=None):
@@ -162,15 +163,15 @@ class Help:
             return await ctx.send(f'Could not find command `{cmd}`')
         await ctx.send(embed=embed)
 
-
     @commands.command(aliases=['support'])
     async def invite(self, ctx):
         """
         Sends a support server invite and a bot invite
         """
-        embed = discord.Embed(title='Invites:', description='[Bot invite](https://discordapp.com/api/oauth2/authorize?client_id=440113872523755520&permissions=0&scope=bot)\n[Support server invite](https://discord.gg/gZESRN5)', color=discord.Color.dark_teal())
+        embed = discord.Embed(title='Invites:',
+                              description='[Bot invite](https://discordapp.com/api/oauth2/authorize?client_id=440113872523755520&permissions=0&scope=bot)\n[Support server invite](https://discord.gg/gZESRN5)',
+                              color=discord.Color.dark_teal())
         await ctx.send(embed=embed)
-
 
     @commands.command(usage="<suggestion>")
     async def suggest(self, ctx, *, suggestion):
@@ -182,7 +183,6 @@ class Help:
             self.suggestionch = self.bot.get_channel(440221696184549377)
         await self.suggestionch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
 
-
     @commands.command(usage="<bugreport>")
     async def bugreport(self, ctx, *, bugreport):
         """
@@ -192,8 +192,6 @@ class Help:
         if self.bugreportch is None:
             self.bugreportch = self.bot.get_channel(440221712056057856)
         await self.bugreportch.send(f'Suggestion by {ctx.author}, id {ctx.author.id}:\n```{suggestion}```')
-
-
 
 
 def setup(bot):
