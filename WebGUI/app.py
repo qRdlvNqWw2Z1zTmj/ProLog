@@ -1,15 +1,12 @@
-from quart import Quart
+from flask import Flask
 
-app = Quart(__name__)
-
-@app.route("/")
-async def hello():
-    return "Hello!"
-
-@app.route("/<name>")
-async def name(name):
-    return f"Hello {name}"
+app = Flask(__name__)
 
 
+@app.route('/')
+def hello_world():
+    return 'Hello World!'
 
-app.run(port=80, debug=True)
+
+if __name__ == '__main__':
+    app.run()
