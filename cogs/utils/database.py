@@ -12,19 +12,23 @@ class DatabaseFunctions:
             SELECT {dbcolumn} FROM {dbtable} 
             WHERE guildid = $1
             """, guildid)
+        if key is not None:
+            try:
+                return result[key]
+            except:
+                return result
         return result
 
     @cached_function()
     async def get_prefixes(self, bot, message):
         prefixes = await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
+        print(prefixes)
         if prefixes is None:
-            await self.set_item(message.guild.id, "configs", "prefixes", None)
-            prefixes = ["!"]
+            print("Set")
+            await self.set_item(message.guild.id, "configs", "prefixes", ['!'])
+            self.get_prefixes.invalidate(self.get_prefixes.get_id(self.bot, message))
+        print(f"Prefixes: {prefixes}, {prefixes}")
         return commands.when_mentioned_or(*prefixes)(bot, message)
-
-    async def set_prefix(self, message, value):
-        self.get_prefixes.invalidate(self.get_prefixes.get_id(self.bot, message))
-        await self.set_item(message.guild.id, "configs", "prefixes", value)
 
     async def set_item(self, guildid: int, dbtable, dbcolumn, value):
         async with self.bot.db.acquire() as connection:

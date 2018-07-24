@@ -17,7 +17,7 @@ class ProLog(commands.Bot):
 
         print("=" * 10)
         print(f"Logged in as {self.user} with id {self.user.id}")
-        print("Logged into PostgresSQL server")
+        print("Logged into PostgresSQL server" if self.db is not None else None)
         print(f"Loaded cogs {', '.join(self.cogs)}")
         print(f"Guild count: {len(self.guilds)}")
         print("=" * 10)

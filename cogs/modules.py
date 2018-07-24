@@ -16,7 +16,12 @@ class Modules:
 
     @log.command()
     async def start(self, ctx, *module: ModuleConverter):
+        if len(module) > 10:
+            await ctx.send("No more than 10 modules can be turned on at a time.")
+            return
+
         await ctx.send(f"Would now log {module}")
+
 
 
 def setup(bot):
