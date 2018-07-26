@@ -12,33 +12,77 @@ class BotCommands:
         self.bot = bot
         self.Functions = Functions()
         self.DatabaseFunctions = DatabaseFunctions(bot)
-        self.mentions = re.compile("<@!?(\d+)>")
+        self.pattern = re.compile(r"<..?[0-9]{18}>")
 
-    @commands.group(aliases=["prefixes"])
+    def clean(self, prefixes: list):
+        try:
+            prefixes.remove(f'<@{self.bot.user.id}> ')
+        except ValueError:
+            pass
+        try:
+            prefixes.remove(f'<@!{self.bot.user.id}> ')
+        except ValueError:
+            pass
+        return prefixes
+
+    @commands.group(invoke_without_subcommand=True, aliases=['prefixes', 'pref'], usage='<add/remove>')
     async def prefix(self, ctx):
-        if ctx.invoked_subcommand is not None:  return
-        prefixes = [x for x in await self.bot.get_prefix(ctx.message) if not self.mentions.match(x)]
-        await ctx.send(
-            embed=discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description="\n".join(prefixes),
-                                color=discord.Color.dark_teal()))
+        """"""
+        if ctx.invoked_subcommand is not None:
+            return
+        prefixes = self.clean(await self.bot.get_prefix(ctx.message))
+        stuff = '"\n"'.join(prefixes)
+        desc = f'"{stuff}"'.ljust(30)
+        embed = discord.Embed(title='Prefixes:' if len(prefixes) > 1 else 'Prefix:', description=desc,
+                              color=discord.Color.dark_teal())
+        await ctx.send(embed=embed)
 
     @prefix.command(aliases=['create'])
     async def add(self, ctx, *prefix):
-        prefixes = await self.DatabaseFunctions.get_prefixes(self.bot, ctx.message)
+        prefixes = self.clean(await self.DatabaseFunctions.get_prefixes(self.bot, ctx.message))
+        added = 0
+
         for p in prefix:
-            if p in prefixes:
-                print(f"Popped {p}")
-                prefix.pop(p)
-            else:
-                prefixes.append(p)
-        prefixes = [x for x in prefixes if not self.mentions.match(x)]
-        prefixes.sort()
-        await self.DatabaseFunctions.set_item(ctx.guild.id, "configs", "prefixes", prefixes)
-        await self.Functions.completed(ctx.message)
+            if self.pattern.match(p) or p in ['@everyone', '@here']:
+                await ctx.send('Prefix cannot be any kind of mention.')
+                continue
+
+            prefixes.append(p)
+            added += 1
+
+        prefixes.sort()  # Makes things nice
+        prefixes = list(set(prefixes))  # Remove dupes
+
+        if added:
+            await self.DatabaseFunctions.set_prefix(ctx.message, prefixes)
+            suff = 'es' * bool(added - 1)
+            await ctx.send(f'{added} prefix{suff} added')
+            return await self.Functions.completed(ctx.message)
+
+        await ctx.send('No prefixes were added.')
+        await self.Functions.not_completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
-        pass
+        if self.bot.dbfuncs is None:
+            return await ctx.send('Custom prefixes are unavailable.\nFor now, use prefix !')
+        prefixes = self.clean(await self.bot.functions.get_prefixes(self.bot, ctx.message))
+        removed = 0
+        for p in prefix:
+            if p not in prefixes:
+                await ctx.send(f'{p} does not exist!')
+
+            else:
+                prefixes.remove(p)
+                removed += 1
+        await self.bot.functions.set_prefix(ctx.message, prefixes)
+        if not removed:
+            await self.Functions.not_completed(ctx.message)
+            return await ctx.send('No prefix was removed!')
+
+        suff = 'es' * bool(removed - 1)
+        await ctx.send(f'{removed} prefix{suff} removed!')
+        await self.bot.functions.completed(ctx.message)
 
 
 def setup(bot):
