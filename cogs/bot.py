@@ -26,19 +26,16 @@ class BotCommands:
     async def add(self, ctx, *prefix):
         prefixes = await self.DatabaseFunctions.get_prefixes(self.bot, ctx.message)
         for p in prefix:
-            if p in prefixes:
-                print(f"Popped {p}")
-                prefix.pop(p)
-            else:
+            if p not in prefixes and not self.mentions.match(p):
                 prefixes.append(p)
-        prefixes = [x for x in prefixes if not self.mentions.match(x)]
-        prefixes.sort()
+        prefixes = [p for p in prefixes if not self.mentions.match(p)]
         await self.DatabaseFunctions.set_item(ctx.guild.id, "configs", "prefixes", prefixes)
         await self.Functions.completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
-        pass
+        prefixes = await self.DatabaseFunctions.get_prefixes(self.bot, ctx.message)
+        await self.DatabaseFunctions.set_item(ctx.guild.id, "configs", "prefixes", [p for p in prefixes if p not in prefix])
 
 
 def setup(bot):
