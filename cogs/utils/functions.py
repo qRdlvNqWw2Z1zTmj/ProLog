@@ -14,10 +14,19 @@ class Functions:
             cont.replace(c, f'\{c}')
         return cont
 
-    async def selection_panel(self, ctx, selectors):
-        desc = '"\n"'.join([s for s in selectors])
-        embed = discord.Embed(title='Selections:' if len(selectors) > 1 else 'Selection:', description=desc,
-                              color=discord.Color.dark_teal())
+    async def module_settings_selection_panel(message, selectors, numbered=False):
+        desc = ""
+        i = 1
+        for s in selectors:
+            if i == 10:
+                desc += ("\U0001f51f" if numbered else s[3]) + f" **-** {s[0]}-{s[1]}\n"
+                break
+            desc += (f"{i}\u20e3" if numbered else s[3]) + f" **-** {s[0]}-{s[1]}\n"
+            i += 1
 
-    async def module_settings_selector(self, ):
-        pass
+        embed = await message.channel.send(
+            embed=discord.Embed(title='Selections:' if len(selectors) > 1 else 'Selection:', description=desc, color=discord.Color.dark_teal()))
+        i = 1
+        for s in selectors:
+            await embed.add_reaction(f"{i}\u20e3" if i < 10 else "\U0001f51f")
+            i += 1

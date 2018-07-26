@@ -1,11 +1,13 @@
 from discord.ext import commands
 
 from .utils.converters import ModuleConverter
+from .utils.functions import Functions
 
 
 class Modules:
     def __init__(self, bot):
         self.bot = bot
+        self.Functions = Functions()
 
     @commands.group(aliases=["logging", "logs"])
     async def log(self, ctx):
@@ -20,7 +22,7 @@ class Modules:
             await ctx.send("No more than 10 modules can be turned on at a time.")
             return
 
-        await ctx.send(f"Would now log {module}")
+        await Functions.module_settings_selection_panel(ctx.message, module, numbered=True)
 
 
 
