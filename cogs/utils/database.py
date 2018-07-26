@@ -19,15 +19,12 @@ class DatabaseFunctions:
                 return result
         return result
 
-    @cached_function()
     async def get_prefixes(self, bot, message):
         prefixes = await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
-        print(prefixes)
         if prefixes is None:
-            print("Set")
-            await self.set_item(message.guild.id, "configs", "prefixes", ['!'])
-            self.get_prefixes.invalidate(self.get_prefixes.get_id(self.bot, message))
-        print(f"Prefixes: {prefixes}, {prefixes}")
+            await self.bot.db.execute("INSERT INTO configs(guildid, prefixes) VALUES($1, '{!}')", message.guild.id)
+            # self.get_prefixes.invalidate(self.get_prefixes.get_id(self.bot, message))     CACHE FIX
+            prefixes = await self.get_row(message.guild.id, "configs", "prefixes", "prefixes")
         return commands.when_mentioned_or(*prefixes)(bot, message)
 
     async def set_item(self, guildid: int, dbtable, dbcolumn, value):
@@ -40,7 +37,7 @@ class DatabaseFunctions:
                 """, value, guildid)
 
     async def remove_item(self, guildid: int, dbtable, dbcolumn, value):
-        async with self.bot.db.acquire() as connection:
+        async with self.bot.db.acquire() as connection:  # Is a transaction really necessary?
             async with connection.transaction():
                 row = await self.get_row(dbtable, dbcolumn, guildid)
                 row.pop(value)
