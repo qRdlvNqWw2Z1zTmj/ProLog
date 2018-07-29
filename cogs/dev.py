@@ -2,13 +2,12 @@ import traceback
 
 from discord.ext import commands
 
-from .utils.functions import Functions
+from .utils import functions
 
 
 class Dev:
     def __init__(self, bot):
         self.bot = bot
-        self.Functions = Functions()
 
     @commands.command()
     async def say(self, ctx, *, arg):
@@ -25,7 +24,7 @@ class Dev:
     async def logout(self, ctx):
         """Logs the bot out."""
         await self.bot.db.close()
-        await self.Functions.completed(ctx.message)
+        await functions.completed(ctx.message)
         await self.bot.logout()
 
     @commands.command()
@@ -36,7 +35,7 @@ class Dev:
         except:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
         else:
-            await self.Functions.completed(ctx.message)
+            await functions.completed(ctx.message)
 
     @commands.command()
     async def unload(self, ctx, *, module):
@@ -46,7 +45,7 @@ class Dev:
         except:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
         else:
-            await self.Functions.completed(ctx.message)
+            await functions.completed(ctx.message)
 
     @commands.command()
     async def reload(self, ctx, module):
@@ -58,7 +57,7 @@ class Dev:
             await ctx.send(f'```py\n{traceback.format_exc()}\n```')
             return
         else:
-            await self.Functions.completed(ctx.message)
+            await functions.completed(ctx.message)
 
 
 def setup(bot):

@@ -1,13 +1,12 @@
 from discord.ext import commands
 
 from .utils.converters import ModuleConverter
-from .utils.functions import Functions
+from .utils import functions
 
 
 class Modules:
     def __init__(self, bot):
         self.bot = bot
-        self.Functions = Functions()
 
     @commands.group(aliases=["logging", "logs"])
     async def log(self, ctx):
@@ -16,14 +15,20 @@ class Modules:
         if ctx.invoked_subcommand is None:
             await ctx.send("Please provide a valid option. For usage see the help page")
 
-    @log.command()
-    async def start(self, ctx, *module: ModuleConverter):
-        if len(module) > 10:
+    @log.command(aliases=["set"])
+    async def start(self, ctx, *modules: ModuleConverter):
+        if len(modules) > 10:
             await ctx.send("No more than 10 modules can be turned on at a time.")
             return
 
-        await Functions.module_settings_selection_panel(ctx.message, module, numbered=True)
+        await functions.module_settings_selection_panel(self, ctx.message, modules, numbered=True)
 
+        ret = await functions.yes_no(self, self.bot, ctx.message)
+        print(ret)
+
+    @log.command(aliases=["options"])
+    async def settings(self, modules: ModuleConverter):
+        pass
 
 
 def setup(bot):

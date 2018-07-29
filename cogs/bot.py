@@ -4,13 +4,12 @@ import discord
 from discord.ext import commands
 
 from .utils.database import DatabaseFunctions
-from .utils.functions import Functions
+from .utils import functions
 
 
 class BotCommands:
     def __init__(self, bot):
         self.bot = bot
-        self.Functions = Functions()
         self.DatabaseFunctions = DatabaseFunctions(bot)
         self.mentions = re.compile("<(@|#)(!|&)?(\d+)>")
 
@@ -30,7 +29,7 @@ class BotCommands:
                 prefixes.append(p)
         prefixes = [p for p in prefixes if not self.mentions.match(p)]
         await self.DatabaseFunctions.set_item(ctx.guild.id, "configs", "prefixes", prefixes)
-        await self.Functions.completed(ctx.message)
+        await functions.completed(ctx.message)
 
     @prefix.command(aliases=['delete'])
     async def remove(self, ctx, *prefix):
