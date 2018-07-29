@@ -11,7 +11,7 @@ class BotCommands:
     def __init__(self, bot):
         self.bot = bot
         self.DatabaseFunctions = DatabaseFunctions(bot)
-        self.mentions = re.compile("<(@|#)(!|&)?(\d+)>")
+        self.mentions = re.compile("<(@[!&]?|#)(\d{17,21})>")
 
     @commands.group(aliases=["prefixes"])
     async def prefix(self, ctx):
