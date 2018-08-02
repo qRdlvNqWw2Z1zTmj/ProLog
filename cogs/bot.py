@@ -38,7 +38,7 @@ class BotCommands:
         prefixes = [p for p in prefixes if p not in prefix]
         if len([p for p in prefixes if not self.mentions.match(p)]) == 0:
             await ctx.send('Cant remove that prefix because its the only prefix!')
-            return await functions.not_completed()
+            return await functions.not_completed(ctx.message)
         await self.DatabaseFunctions.set_item(ctx.guild.id, "configs", "prefixes", prefixes)
         await functions.completed(ctx.message)
 
