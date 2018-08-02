@@ -1,5 +1,5 @@
 import asyncio
-from functools import wraps
+from functools import wraps, update_wrapper
 
 
 class LFUNode:
@@ -255,13 +255,16 @@ def _make_key(args, kwds, typed,
     return _HashedSeq(key)
 
 
-class CachedFunction:
+class _CachedFunction:
     def __init__(self, func, limit: int = 100):
         self.limit = limit
         self.cache = LFUCache(limit=self.limit)
-        self.func = func
+        self._func = func
+        self.instance = None
 
     def __call__(self, *args, **kwargs):
+        args = list(args)
+        args.insert(0, self.instance)
         id = self.get_id(*args, **kwargs)
         try:
             return self.cache[id]
@@ -270,9 +273,13 @@ class CachedFunction:
             self.cache[id] = res
             return res
 
+    @property
+    def func(self):
+        return self._func
+
     @staticmethod
     def get_id(*args, **kwargs):
-        _make_key(args, kwargs, True)
+        _make_key(args, kwargs, False)
 
     def invalidate(self, id):
         try:
@@ -284,8 +291,10 @@ class CachedFunction:
         self.cache = LFUCache(limit=self.limit)
 
 
-class AsyncCachedFunction(CachedFunction):
+class _AsyncCachedFunction(_CachedFunction):
     async def __call__(self, *args, **kwargs):
+        args = list(args)
+        args.insert(0, self.instance)
         id = self.get_id(*args, **kwargs)
         try:
             return self.cache[id]
@@ -295,26 +304,25 @@ class AsyncCachedFunction(CachedFunction):
             return res
 
 
-def cached_function(limit: int = 1000):
+def cached_function(limit: int = 128):
     def dec(fn):
         if asyncio.iscoroutinefunction(fn):
-            newfn = AsyncCachedFunction(fn, limit=limit)
-
-            @wraps(fn)
-            async def wrapper(*args, **kwargs):
-                return await newfn(*args, **kwargs)
+            wrapper = _AsyncCachedFunction(fn, limit=limit)
         else:
-            newfn = CachedFunction(fn, limit=limit)
-
-            def wrapper(*args, **kwargs):
-                return newfn(*args, **kwargs)
-
-        for a in dir(newfn):
-            try:
-                setattr(wrapper, a, getattr(newfn, a))
-            except:
-                pass
-
-        return wrapper
-
+            wrapper = _CachedFunction(fn, limit=limit)
+        return update_wrapper(wrapper, fn)
     return dec
+
+if __name__ == '__main__': #Cache test
+    class Test:
+        def __init__(self, a):
+            self.a = a
+
+        @cached_function()
+        def b(self, c):
+            print(self.a, c)
+            return self.a * c
+
+    t = Test(1)
+    print(t.b(2))
+    print(t.b(2))

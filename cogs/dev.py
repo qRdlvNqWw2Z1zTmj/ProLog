@@ -1,8 +1,10 @@
 import traceback
+import importlib
 
 from discord.ext import commands
 
 from .utils import functions
+from .utils import database
 
 
 class Dev:
@@ -47,8 +49,11 @@ class Dev:
         else:
             await functions.completed(ctx.message)
 
-    @commands.command()
+    @commands.group(invoke_without_command=True)
     async def reload(self, ctx, module):
+        if ctx.invoked_subcommand is not None:
+            return
+
         """Reloads a module."""
         try:
             self.bot.unload_extension(module)
@@ -59,6 +64,11 @@ class Dev:
         else:
             await functions.completed(ctx.message)
 
+    @reload.command()
+    async def db(self, ctx):
+        importlib.reload(database)
+        self.bot.DatabaseFunctions = database.DatabaseFunctions(self.bot)
+        await functions.completed(ctx.message)
 
 def setup(bot):
     bot.add_cog(Dev(bot))

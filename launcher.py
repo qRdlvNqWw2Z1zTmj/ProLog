@@ -34,7 +34,8 @@ def run_bot():
 
     bot.modules = data.modules
     bot.db = pool
-    bot.command_prefix = DatabaseFunctions(bot).get_prefixes
+    bot.DatabaseFunctions = DatabaseFunctions(bot)
+    bot.command_prefix = lambda b, m: bot.DatabaseFunctions.get_prefixes(m)
 
     bot.run(config.token)
 
