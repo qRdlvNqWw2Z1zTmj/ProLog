@@ -14,6 +14,7 @@ class ProLog(commands.Bot):
             except Exception:
                 print(f"Failed to load extension {extension}")
                 traceback.print_exc()
+        self.load_extension("jishaku")  # Load Jishaku
 
         print("=" * 10)
         print(f"Logged in as {self.user} with id {self.user.id}")

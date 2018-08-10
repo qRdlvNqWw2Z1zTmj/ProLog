@@ -1,4 +1,4 @@
-cogs = ["cogs.help", "cogs.dev", "cogs.eval", "cogs.general", "cogs.bot", "cogs.errorhandler", "cogs.guildevents",
+cogs = ["cogs.help", "cogs.dev", "cogs.general", "cogs.bot", "cogs.errorhandler", "cogs.guildevents",
         "cogs.modules"]
 
 modules = {}
