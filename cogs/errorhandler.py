@@ -23,6 +23,8 @@ class ErrorHandler:
         elif isinstance(error, commands.CheckFailure):
             if isinstance(error, commands.NotOwner):
                 a = []
+                if not hasattr(error, "missing_perms"):
+                    return
                 for i in error.missing_perms:
                     a.append(' '.join(i.split('_')))
                 await ctx.send(f'{ctx.author.mention} Missing permissions: {", ".join(a)}')
